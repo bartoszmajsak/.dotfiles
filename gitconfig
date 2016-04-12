@@ -1,0 +1,8 @@
+[user]
+	name = Bartosz Majsak
+	email = bartosz.majsak@gmail.com
+[alias]
+	history = log --oneline --graph --decorate --all
+	st = status
+	co = checkout
+	po = !git push --set-upstream origin $(git symbolic-ref --short HEAD)
