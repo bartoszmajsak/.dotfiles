@@ -1,0 +1,3 @@
+[dotfiles]
+repository = /home/bartek/.dotfiles
+ignore = ['.git', '.gitignore']
