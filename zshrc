@@ -49,10 +49,10 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git mvn)
+plugins=(git mvn docker)
 
 # User configuration
-
+export DOCKER_HOST=tcp://localhost:4243
 export M2_HOME=/usr/share/maven/latest
 export JAVA_HOME=/usr/lib/jvm/java
 export PATH=$M2_HOME/bin:$JAVA_HOME/bin:$PATH
