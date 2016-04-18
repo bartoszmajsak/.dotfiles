@@ -12,7 +12,10 @@ export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 mvn() {
   project_name=${PWD##*/} 
-  $M2_HOME/bin/mvn "$@"; notify_build_status $? $project_name
+  timer=${timer:-$SECONDS}
+  $M2_HOME/bin/mvn "$@"; notify_build_status $? "$project_name [$(($SECONDS - $timer))s]"
+
+  unset timer;
 }
 
 # Load plugins
