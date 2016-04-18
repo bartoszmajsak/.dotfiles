@@ -9,6 +9,7 @@ antigen bundle mvn
 antigen bundle pip
 antigen bundle docker
 antigen bundle command-not-found
+antigen bundle Tarrasch/zsh-autoenv
 
 # Syntax highlighting bundle.
 antigen bundle zsh-users/zsh-syntax-highlighting
@@ -22,7 +23,10 @@ POWERLEVEL9K_CONTEXT_DEFAULT_FOREGROUND="white"
 POWERLEVEL9K_CONTEXT_ROOT_BACKGROUND="red"
 POWERLEVEL9K_CONTEXT_ROOT_FOREGROUND="blue"
 
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status history time)
+POWERLEVEL9K_SHORTEN_DIR_LENGTH=3
+POWERLEVEL9K_PROMPT_ON_NEWLINE=true
+
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status time)
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir vcs)
 
 # Load the theme.
