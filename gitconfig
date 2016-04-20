@@ -6,3 +6,4 @@
 	st = status
 	co = checkout
 	po = !git push --set-upstream origin $(git symbolic-ref --short HEAD)
+	lo = log --oneline
