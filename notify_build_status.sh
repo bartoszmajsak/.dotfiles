@@ -6,7 +6,7 @@ function notify_build_status() {
     0) result='SUCCESS' ;;
     1) result='FAILURE' ;;
   esac
-
-  notify-send "Build $result" "$2" -i ~/.icons/ike_build_${result:l}.png -t 15000
+  echo $3
+  notify-send "Build $result [$2s]" "$3" -i ~/.icons/ike_build_${result:l}.png -t 15000
 }
 

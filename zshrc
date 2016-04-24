@@ -13,7 +13,8 @@ export PATH=$HOME/bin:/usr/local/bin:$PATH
 mvn() {
   project_name=${PWD##*/} 
   timer=${timer:-$SECONDS}
-  $M2_HOME/bin/mvn "$@"; notify_build_status $? "$project_name [$(($SECONDS - $timer))s]"
+  mvn_cmd=$@
+  $M2_HOME/bin/mvn $@; notify_build_status $? "$(($SECONDS - $timer))" "$project_name [mvn $mvn_cmd]"
 
   unset timer;
 }
