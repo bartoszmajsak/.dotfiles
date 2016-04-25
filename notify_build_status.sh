@@ -1,5 +1,9 @@
 #!/bin/zsh
 
+# This function expectes to be called with 3 parameters
+# $1 - status code of the operation it's wrapping
+# $2 - time execution
+# $3 - text to be displayed in the notification bubble
 function notify_build_status() {
   
   case "$1" in
