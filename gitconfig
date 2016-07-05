@@ -8,3 +8,5 @@
 	po = !git push --set-upstream origin $(git symbolic-ref --short HEAD)
 	lo = log --oneline
 	last = diff-tree --no-commit-id --name-only -r HEAD
+[pull]
+	rebase = true
