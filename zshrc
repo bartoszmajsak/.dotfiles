@@ -9,6 +9,7 @@ export JAVA_HOME=/usr/lib/jvm/java
 export PATH=$M2_HOME/bin:$JAVA_HOME/bin:$PATH
 
 export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$PATH:$HOME/.rvm/bin
 
 mvn() {
   project_name=${PWD##*/} 
