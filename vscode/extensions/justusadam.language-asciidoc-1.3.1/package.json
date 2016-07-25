@@ -1,0 +1,131 @@
+{
+	"__metadata": {
+		"galleryApiUrl": "https://marketplace.visualstudio.com/_apis/public/gallery",
+		"id": "5cb09e43-3036-4633-b6d7-719da49aa8fe",
+		"publisherId": "2c93d4f5-4858-4c44-9577-e3790e9f20cf",
+		"publisherDisplayName": "Justus Adam",
+		"installCount": 976,
+		"versions": [
+			{
+				"version": "1.3.1",
+				"date": "2015-12-08T22:34:15.99Z",
+				"downloadHeaders": {
+					"X-Market-Client-Id": "VSCode",
+					"X-Market-User-Id": "a9c6d1f94ce4739de83bcf23f638fab16d6fb2be32fe051e6ddd41ced274a63d"
+				},
+				"downloadUrl": "https://justusadam.gallery.vsassets.io/_apis/public/gallery/publisher/justusadam/extension/language-asciidoc/1.3.1/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage?install=true",
+				"manifestUrl": "https://justusadam.gallery.vsassets.io/_apis/public/gallery/publisher/justusadam/extension/language-asciidoc/1.3.1/assetbyname/Microsoft.VisualStudio.Code.Manifest"
+			},
+			{
+				"version": "1.3.0",
+				"date": "2015-12-08T22:16:17.433Z",
+				"downloadHeaders": {
+					"X-Market-Client-Id": "VSCode",
+					"X-Market-User-Id": "a9c6d1f94ce4739de83bcf23f638fab16d6fb2be32fe051e6ddd41ced274a63d"
+				},
+				"downloadUrl": "https://justusadam.gallery.vsassets.io/_apis/public/gallery/publisher/justusadam/extension/language-asciidoc/1.3.0/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage/Microsoft.VisualStudio.Services.VSIXPackage?install=true",
+				"manifestUrl": "https://justusadam.gallery.vsassets.io/_apis/public/gallery/publisher/justusadam/extension/language-asciidoc/1.3.0/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage/Microsoft.VisualStudio.Code.Manifest"
+			},
+			{
+				"version": "1.2.0",
+				"date": "2015-12-08T22:14:26Z",
+				"downloadHeaders": {
+					"X-Market-Client-Id": "VSCode",
+					"X-Market-User-Id": "a9c6d1f94ce4739de83bcf23f638fab16d6fb2be32fe051e6ddd41ced274a63d"
+				},
+				"downloadUrl": "https://justusadam.gallery.vsassets.io/_apis/public/gallery/publisher/justusadam/extension/language-asciidoc/1.2.0/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage/Microsoft.VisualStudio.Services.VSIXPackage?install=true",
+				"manifestUrl": "https://justusadam.gallery.vsassets.io/_apis/public/gallery/publisher/justusadam/extension/language-asciidoc/1.2.0/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage/Microsoft.VisualStudio.Code.Manifest"
+			},
+			{
+				"version": "1.1.0",
+				"date": "2015-12-07T17:39:54.83Z",
+				"downloadHeaders": {
+					"X-Market-Client-Id": "VSCode",
+					"X-Market-User-Id": "a9c6d1f94ce4739de83bcf23f638fab16d6fb2be32fe051e6ddd41ced274a63d"
+				},
+				"downloadUrl": "https://justusadam.gallery.vsassets.io/_apis/public/gallery/publisher/justusadam/extension/language-asciidoc/1.1.0/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage/Microsoft.VisualStudio.Services.VSIXPackage?install=true",
+				"manifestUrl": "https://justusadam.gallery.vsassets.io/_apis/public/gallery/publisher/justusadam/extension/language-asciidoc/1.1.0/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage/Microsoft.VisualStudio.Code.Manifest"
+			},
+			{
+				"version": "1.0.0",
+				"date": "2015-11-20T11:11:59.65Z",
+				"downloadHeaders": {
+					"X-Market-Client-Id": "VSCode",
+					"X-Market-User-Id": "a9c6d1f94ce4739de83bcf23f638fab16d6fb2be32fe051e6ddd41ced274a63d"
+				},
+				"downloadUrl": "https://justusadam.gallery.vsassets.io/_apis/public/gallery/publisher/justusadam/extension/language-asciidoc/1.0.0/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage/Microsoft.VisualStudio.Services.VSIXPackage?install=true",
+				"manifestUrl": "https://justusadam.gallery.vsassets.io/_apis/public/gallery/publisher/justusadam/extension/language-asciidoc/1.0.0/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage/Microsoft.VisualStudio.Code.Manifest"
+			},
+			{
+				"version": "0.0.2",
+				"date": "2015-11-19T10:42:21.43Z",
+				"downloadHeaders": {
+					"X-Market-Client-Id": "VSCode",
+					"X-Market-User-Id": "a9c6d1f94ce4739de83bcf23f638fab16d6fb2be32fe051e6ddd41ced274a63d"
+				},
+				"downloadUrl": "https://justusadam.gallery.vsassets.io/_apis/public/gallery/publisher/justusadam/extension/language-asciidoc/0.0.2/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage/Microsoft.VisualStudio.Services.VSIXPackage?install=true",
+				"manifestUrl": "https://justusadam.gallery.vsassets.io/_apis/public/gallery/publisher/justusadam/extension/language-asciidoc/0.0.2/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage/Microsoft.VisualStudio.Code.Manifest"
+			},
+			{
+				"version": "0.0.1",
+				"date": "2015-11-19T10:23:52.187Z",
+				"downloadHeaders": {
+					"X-Market-Client-Id": "VSCode",
+					"X-Market-User-Id": "a9c6d1f94ce4739de83bcf23f638fab16d6fb2be32fe051e6ddd41ced274a63d"
+				},
+				"downloadUrl": "https://justusadam.gallery.vsassets.io/_apis/public/gallery/publisher/justusadam/extension/language-asciidoc/0.0.1/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage/Microsoft.VisualStudio.Services.VSIXPackage?install=true",
+				"manifestUrl": "https://justusadam.gallery.vsassets.io/_apis/public/gallery/publisher/justusadam/extension/language-asciidoc/0.0.1/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage/Microsoft.VisualStudio.Code.Manifest"
+			}
+		]
+	},
+	"name": "language-asciidoc",
+	"displayName": "Asciidoc",
+	"description": "Markup support for AsciDoc(tor) documents",
+	"version": "1.3.1",
+	"publisher": "justusadam",
+	"icon": "images/logo.png",
+	"engines": {
+		"vscode": "^0.10.1"
+	},
+	"categories": [
+		"Languages"
+	],
+	"galleryBanner": {
+		"color": "#136e9e",
+		"theme": "dark"
+	},
+	"license": "MIT",
+	"homepage": "https://github.com/JustusAdam/language-asciidoc",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/JustusAdam/language-asciidoc.git"
+	},
+	"bugs": {
+		"url": "https://github.com/JustusAdam/language-asciidoc/issues"
+	},
+	"contributes": {
+		"languages": [
+			{
+				"id": "asciidoc",
+				"aliases": [
+					"Asciidoc[tor]",
+					"asciidoc"
+				],
+				"extensions": [
+					".adoc",
+					".ad",
+					".asciidoc",
+					".asc"
+				],
+				"configuration": "./asciidoc.configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "asciidoc",
+				"scopeName": "source.asciidoc",
+				"path": "./syntaxes/asciidoc.tmLanguage"
+			}
+		]
+	}
+}
