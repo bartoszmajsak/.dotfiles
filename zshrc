@@ -3,6 +3,7 @@
 source ~/.notify_build_status.sh
 
 # User configuration
+export TERM="xterm-256color"
 export DOCKER_HOST=tcp://localhost:4243
 export M2_HOME=/usr/share/maven/latest
 export JAVA_HOME=/usr/lib/jvm/java
@@ -21,7 +22,9 @@ mvn() {
 }
 
 # Load plugins
-source ~/.antigenrc
+source $HOME/.antigenrc
 
 source $HOME/.nvm/nvm.sh
+
+source $HOME/.aliases
 
