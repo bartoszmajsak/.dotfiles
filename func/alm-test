@@ -1,0 +1,4 @@
+alm-test() {
+  cd ~/.gvm/pkgsets/system/global/src/github.com/almighty/almighty-test-runner
+  gvm use system
+}

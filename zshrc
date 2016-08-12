@@ -23,8 +23,7 @@ mvn() {
 
 # Load custom functions
 fpath=( ~/.dotfiles/func "${fpath[@]}" )
-autoload -Uz arq
-
+autoload -Uz arq alm-test alm-core idea rubymine
 
 # Load plugins
 source $HOME/.antigenrc
