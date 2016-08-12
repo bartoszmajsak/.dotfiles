@@ -21,6 +21,11 @@ mvn() {
   unset timer;
 }
 
+# Load custom functions
+fpath=( ~/.dotfiles/func "${fpath[@]}" )
+autoload -Uz arq
+
+
 # Load plugins
 source $HOME/.antigenrc
 
