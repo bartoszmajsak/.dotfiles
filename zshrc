@@ -1,8 +1,8 @@
-
 # Custom functions
 source ~/.notify_build_status.sh
 
 # User configuration
+export EDITOR=vim
 export TERM="xterm-256color"
 export DOCKER_HOST=tcp://localhost:4243
 export M2_HOME=/usr/share/maven/latest
@@ -23,11 +23,9 @@ mvn() {
 
 # Load plugins
 source $HOME/.antigenrc
-
 source $HOME/.nvm/nvm.sh
 
 # Load sdk managers
-
 [[ -s "/home/bartek/.gvm/scripts/gvm" ]] && source "/home/bartek/.gvm/scripts/gvm"
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
@@ -37,3 +35,5 @@ export SDKMAN_DIR="/home/bartek/.sdkman"
 # Load custom functions
 fpath=( ~/.dotfiles/func "${fpath[@]}" )
 autoload -Uz arq alm-test alm-core idea rubymine
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
