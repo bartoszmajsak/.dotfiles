@@ -10,3 +10,5 @@
 	last = diff-tree --no-commit-id --name-only -r HEAD
 [pull]
 	rebase = true
+[core]
+	excludesfile = ~/.gitignore
