@@ -21,20 +21,19 @@ mvn() {
   unset timer;
 }
 
-# Load custom functions
-fpath=( ~/.dotfiles/func "${fpath[@]}" )
-autoload -Uz arq alm-test alm-core idea rubymine
-
 # Load plugins
 source $HOME/.antigenrc
 
 source $HOME/.nvm/nvm.sh
 
-source $HOME/.aliases
-
+# Load sdk managers
 
 [[ -s "/home/bartek/.gvm/scripts/gvm" ]] && source "/home/bartek/.gvm/scripts/gvm"
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="/home/bartek/.sdkman"
 [[ -s "/home/bartek/.sdkman/bin/sdkman-init.sh" ]] && source "/home/bartek/.sdkman/bin/sdkman-init.sh"
+
+# Load custom functions
+fpath=( ~/.dotfiles/func "${fpath[@]}" )
+autoload -Uz arq alm-test alm-core idea rubymine
