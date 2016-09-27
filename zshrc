@@ -34,6 +34,6 @@ export SDKMAN_DIR="/home/bartek/.sdkman"
 
 # Load custom functions
 fpath=( ~/.dotfiles/func "${fpath[@]}" )
-autoload -Uz arq alm-test alm-core idea rubymine dclean
+autoload -Uz arq alm-test alm-core idea rubymine dclean gh
 
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
