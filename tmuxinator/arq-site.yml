@@ -29,5 +29,5 @@ pre: sudo systemctl start docker
 # post: tmux -CC attach -t arq-site
 
 windows:
-  - editor: vim
+  - workspace: rubymine .
   - docker: arq
