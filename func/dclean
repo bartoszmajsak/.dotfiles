@@ -1,6 +1,5 @@
 dclean() {
   sudo docker rm -v $(sudo docker ps -a -q -f status=exited)
-  sudo docker rm -v $(sudo docker ps -a -q -f dangling=true) 
   sudo docker rmi $(sudo docker images -f "dangling=true" -q)  
   sudo docker volume rm $(sudo docker volume ls -q | grep -v m2_repo)  
 }
