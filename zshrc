@@ -13,10 +13,10 @@ export PATH=$FORGE_HOME/bin:$M2_HOME/bin:$JAVA_HOME/bin:$PATH
 
 export OC_HOME=$HOME/.oc/latest
 
-
+export MINISHIFT_HOME=$HOME/.minishift/latest
 
 export PATH=$HOME/bin:/usr/local/bin:$PATH
-export PATH=$PATH:$HOME/.rvm/bin:$OC_HOME
+export PATH=$PATH:$HOME/.rvm/bin:$OC_HOME:$MINISHIFT_HOME
 
 mvn() {
   project_name=${PWD##*/} 
