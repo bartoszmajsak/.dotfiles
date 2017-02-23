@@ -1,0 +1,7 @@
+cleanup() {
+  dclean
+  sudo dnf clean all
+  sudo rm -R /var/cache/PackageKit/24/metadata/*
+  pushd ~ && rm -rf `find . -type d -name target` && popd
+  sudo fstrim -av
+}

@@ -29,7 +29,7 @@ mvn() {
 
 # Load custom functions
 fpath=( ~/.dotfiles/func "${fpath[@]}" )
-autoload -Uz arq alm-test alm-core idea rubymine webstorm dclean gh
+autoload -Uz arq alm-test alm-core idea rubymine webstorm dclean gh cleanup
 
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 
