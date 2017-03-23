@@ -40,6 +40,9 @@ export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 source $HOME/.antigenrc
 source $HOME/.nvm/nvm.sh
 
+# Load aliases
+source $HOME/.aliases
+
 # Fabric8
 export PATH=$PATH:$HOME/.fabric8/bin
 
