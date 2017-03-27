@@ -7,7 +7,7 @@ export TERM="xterm-256color"
 export DOCKER_HOST=tcp://localhost:4243
 export M2_HOME=/usr/share/maven/latest
 export M2_REPO=$HOME/.m2/repository
-export JAVA_HOME=/usr/lib/jvm/java
+export JAVA_HOME=/usr/bin/java
 export FORGE_HOME=$HOME/.forge/latest
 export PATH=$FORGE_HOME/bin:$M2_HOME/bin:$JAVA_HOME/bin:$PATH
 
