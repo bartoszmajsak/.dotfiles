@@ -4,7 +4,7 @@ source ~/.notify_build_status.sh
 # User configuration
 export EDITOR=vim
 export TERM="xterm-256color"
-export DOCKER_HOST=tcp://localhost:4243
+export DOCKER_HOST="unix:///var/run/docker.sock"
 export M2_HOME=/usr/bin/mvn
 export M2_REPO=$HOME/.m2/repository
 export JAVA_HOME=/usr/bin/java
