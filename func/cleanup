@@ -1,7 +1,9 @@
 cleanup() {
   dclean
+  sudo journalctl --vacuum-time=1s
   sudo dnf clean all
-  sudo rm -R /var/cache/PackageKit/24/metadata/*
+  sudo dnf autoremove -y
+  sudo pkcon refresh force -c -1
   pushd ~ && rm -rf `find . -type d -name target` && popd
   sudo fstrim -av
 }
