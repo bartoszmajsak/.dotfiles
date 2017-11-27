@@ -46,6 +46,10 @@ source $HOME/.aliases
 # Fabric8
 export PATH=$PATH:$HOME/.fabric8/bin
 
+. $HOME/.asdf/asdf.sh
+. $HOME/.asdf/completions/asdf.bash
+
 # THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="/home/bartek/.sdkman"
 [[ -s "/home/bartek/.sdkman/bin/sdkman-init.sh" ]] && source "/home/bartek/.sdkman/bin/sdkman-init.sh"
+
