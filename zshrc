@@ -9,14 +9,9 @@ export M2_HOME=/usr/bin/mvn
 export M2_REPO=$HOME/.m2/repository
 export JAVA_HOME=/usr/bin/java
 export FORGE_HOME=$HOME/.forge/latest
-export PATH=$FORGE_HOME/bin:$M2_HOME/bin:$JAVA_HOME/bin:$PATH
+export PATH=$PATH:$FORGE_HOME/bin:$M2_HOME/bin:$JAVA_HOME/bin
 
-export OC_HOME=$HOME/.oc/latest
-
-export MINISHIFT_HOME=$HOME/.minishift/latest
-
-export PATH=/usr/local/bin:$PATH
-export PATH=$PATH:$HOME/.rvm/bin:$OC_HOME:$MINISHIFT_HOME
+export PATH=$PATH:/usr/local/bin
 
 mvn() {
   project_name=${PWD##*/} 
@@ -27,11 +22,9 @@ mvn() {
   unset timer;
 }
 
-# Load custom functions
+# Load custom functionsc
 fpath=( ~/.dotfiles/func "${fpath[@]}" )
-autoload -Uz arq alm-test alm-core idea rubymine webstorm dclean gh cleanup
-
-export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+autoload -Uz arq alm-test alm-core idea goland rubymine webstorm dclean gh cleanup
 
 # Load sdk managers
 [[ -s "/home/bartek/.gvm/scripts/gvm" ]] && source "/home/bartek/.gvm/scripts/gvm"
@@ -43,13 +36,10 @@ source $HOME/.nvm/nvm.sh
 # Load aliases
 source $HOME/.aliases
 
-# Fabric8
-export PATH=$PATH:$HOME/.fabric8/bin
-
 . $HOME/.asdf/asdf.sh
 . $HOME/.asdf/completions/asdf.bash
 
-# THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/home/bartek/.sdkman"
-[[ -s "/home/bartek/.sdkman/bin/sdkman-init.sh" ]] && source "/home/bartek/.sdkman/bin/sdkman-init.sh"
+eval "$(direnv hook zsh)"
 
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH=$PATH:$HOME/.rvm/bin

@@ -14,3 +14,7 @@
 	rebase = true
 [core]
 	excludesfile = ~/.gitignore
+	attributesfile = /home/bartek/.gitattributes
+
+[diff "golang"]
+	textconv=pygmentize
