@@ -1,4 +1,4 @@
-.autoenv.zsh
+.autoenv*.zsh
 .env
 .envrc
 *.ign.sh
