@@ -1,13 +1,17 @@
 # /home/bartek/.tmuxinator/launcher.yml
 
 name: launcher
-root: ~/
+root: /home/bartek/code/redhat/fabric8/
 
 # Optional tmux socket
 # socket_name: foo
 
 # Runs before everything. Use it to start daemons etc.
 # pre: sudo /etc/rc.d/mysqld start
+
+on_project_start:
+  - sudo systemctl start docker
+  - minishift start
 
 # Project hooks
 # Runs on project start, always
@@ -25,7 +29,7 @@ root: ~/
 # pre_window: rbenv shell 2.0.0-p247
 
 # Pass command line options to tmux. Useful for specifying a different tmux.conf.
-# tmux_options: -f ~/.tmux.mac.conf
+# tmux_options: -f tmux~/.tmux.mac.conf
 
 # Change the command to call tmux.  This can be used by derivatives/wrappers like byobu.
 # tmux_command: byobu
@@ -43,13 +47,29 @@ root: ~/
 # post: tmux -CC attach -t launcher
 
 windows:
-  - editor:
+  - edit:
       layout: main-vertical
       # Synchronize all panes of this window, can be enabled before or after the pane commands run.
       # 'before' represents legacy functionality and will be deprecated in a future release, in favour of 'after'
       # synchronize: after
       panes:
-        - vim
-        - guard
-  - server: bundle exec rails s
-  - logs: tail -f log/development.log
+        - launcher: 
+          - cd launcher/launcher-backend
+          - ide
+        - fabric8-ui: 
+          - cd fabric8-ui
+          - ide   
+  - run:
+      layout: main-horizontal
+      panes:
+        - launcher-build: 
+          - cd launcher/launcher-backend
+          - export OSIO=PRODUCTION
+          - source ./launcher-env-template.sh  
+          - build
+          - run
+        - f8-ui-build:
+          - cd fabric8-ui
+          - build
+          - run
+
