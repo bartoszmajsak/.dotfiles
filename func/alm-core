@@ -1,4 +1,0 @@
-alm-core() {
-  cd ~/.gvm/pkgsets/system/global/src/github.com/almighty/almighty-core
-  gvm use system
-}

@@ -1,3 +1,0 @@
-alm-test() {
-  cd ~/code/golang/src/github.com/almighty/almighty-test-runner
-}
