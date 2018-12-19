@@ -1,2 +1,1 @@
 xdg-open http://github.com/$(git remote get-url origin | cut -d ':' -f 2) &>/dev/null
-
