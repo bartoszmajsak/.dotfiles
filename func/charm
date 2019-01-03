@@ -1,0 +1,3 @@
+charm() {
+ ide-charm . > /dev/null 2>&1 &
+}

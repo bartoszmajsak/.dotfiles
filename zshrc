@@ -24,7 +24,7 @@ mvn() {
 
 # Load custom functionsc
 fpath=( ~/.dotfiles/func "${fpath[@]}" )
-autoload -Uz arq alm-test alm-core idea goland rubymine webstorm dclean gh cleanup
+autoload -Uz arq idea goland rubymine webstorm charm dclean gh cleanup
 
 # Load sdk managers
 [[ -s "/home/bartek/.gvm/scripts/gvm" ]] && source "/home/bartek/.gvm/scripts/gvm"
