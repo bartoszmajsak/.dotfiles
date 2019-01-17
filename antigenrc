@@ -8,22 +8,24 @@ antigen bundles <<EOBUNDLES
 
   git
   mvn
-  pip
+  pip 
   docker
   rvm
+  oc
   command-not-found
+  history
   Tarrasch/zsh-autoenv
-  tmuxinator
 
   # Node plugins
   node
   npm
-  coffee
   akoenig/npm-run.plugin.zsh
 
   # Syntax highlighting bundle.
   zsh-users/zsh-syntax-highlighting
-  peterhurford/git-it-on.zsh
+
+  # Completion
+#  kiurchv/asdf.plugin.zsh
 
 EOBUNDLES
 
