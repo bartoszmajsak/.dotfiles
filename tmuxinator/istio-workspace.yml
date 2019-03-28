@@ -44,7 +44,9 @@ root: ~/code/golang/src/github.com/aslakknutsen/istio-workspace
 # post: tmux -CC attach -t istio-workspace
 
 windows:
-  - code: ide
+  - code: 
+    - source .autoenv.zsh
+    - ide
   - sandbox: ls 
   - openshift: cd ~/code/clusters/openshift/istio-workshop
   - docker-containers: watch docker ps
