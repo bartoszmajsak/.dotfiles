@@ -25,6 +25,16 @@ mvn() {
   unset timer;
 }
 
+make() {
+  project_name=${PWD##*/} 
+  timer=${timer:-$SECONDS}
+  make_cmd=$@
+  /usr/bin/make $@; notify_build_status $? "$(($SECONDS - $timer))" "$project_name [make $make_cmd]"
+
+  unset timer;
+}
+
+
 zstyle ':completion:*' menu select.
 
 # Load custom functionsc
