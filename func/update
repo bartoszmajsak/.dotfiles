@@ -1,0 +1,6 @@
+update() {
+  sudo dnf update
+  asdf update
+  asdf plugin-update --all
+  zplug update 
+}
