@@ -2,7 +2,7 @@
 
 
 name: istio-workspace
-root: ~/code/golang/src/github.com/aslakknutsen/istio-workspace
+root: ~/code/golang/src/github.com/maistra/istio-workspace
 
 # Optional tmux socket
 # socket_name: foo
