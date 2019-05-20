@@ -1,4 +1,3 @@
-# Custom functions
 source ~/.notify_build_status.sh
 
 # User configuration
@@ -34,15 +33,12 @@ make() {
   unset timer;
 }
 
-
 zstyle ':completion:*' menu select.
 
-# Load custom functionsc
 fpath=( ~/.dotfiles/func "${fpath[@]}" )
 autoload -Uz arq idea goland rubymine webstorm charm dclean gh cleanup update
 
 # History settings
-
 export HISTFILE=$HOME/.histfile
 export HISTSIZE=10000
 export SAVEHIST=10000
