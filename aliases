@@ -1,6 +1,3 @@
 alias setclip='xclip -selection c'
 alias getclip='xclip -selection clipboard -o'
-alias noidea='rm -rf `find . -type f -name '*.iml'` && rm -rf .idea'
-alias gh-delete-all-repos='http https://api.github.com/user/repos "Authorization:token $DELETE_TOKEN" per_page==100 type==owner | jq '.[].full_name' | xargs -I '{}' http DELETE https://api.github.com/repos/'{}' "Authorization:token $GH_DELETE_TOKEN" '
-alias gh-delete-repos='while IFS= read -r repo || [[ -n "$repo" ]]; do curl -XDELETE -H "Authorization: token $GH_DELETE_TOKEN" "https://api.github.com/repos/$repo"; done'
-
+alias noidea="rm -rf $(find . -type f -name '*.iml') && rm -rf .idea"
