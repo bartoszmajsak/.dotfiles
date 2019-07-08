@@ -4,3 +4,5 @@
 *.ignore
 .tool-versions
 details.rb
+
+openshift.local.clusterup/
