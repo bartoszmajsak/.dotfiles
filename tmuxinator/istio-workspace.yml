@@ -47,7 +47,11 @@ windows:
   - code: 
     - source .autoenv.zsh
     - ide
-  - sandbox: ls 
-  - openshift: cd ~/code/clusters/openshift/istio-workshop
+  - sandbox:
+    - source .autoenv.zsh
+  - docs:
+    - cd ../istio-workspace-docs-site
+    - source .autoenv.zsh
+  - openshift: cd ~/code/clusters/openshift
   - docker-containers: watch docker ps
   - docker-logs: journalctl -u docker.service -f
