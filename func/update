@@ -1,5 +1,5 @@
 update() {
-  sudo dnf update
+  sudo dnf update -y
   asdf update
   asdf plugin-update --all
   zplug update 
