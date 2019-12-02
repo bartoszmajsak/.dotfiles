@@ -6,3 +6,7 @@
 details.rb
 
 openshift.local.clusterup/
+
+telepresence.log
+
+*.env
