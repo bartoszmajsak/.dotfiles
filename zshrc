@@ -7,11 +7,10 @@ export DOCKER_HOST="unix:///var/run/docker.sock"
 export M2_HOME=/usr/bin/mvn
 export M2_REPO=$HOME/.m2/repository
 export JAVA_HOME=/usr/bin/java
-FORGE_HOME=$HOME/.forge/latest
 VSCODE_HOME=$HOME/ide/code
 HUB_HOME=$HOME/.hub
 
-export PATH=$PATH:$FORGE_HOME/bin:$M2_HOME/bin:$JAVA_HOME/bin:$VSCODE_HOME/bin:$HUB_HOME/bin
+export PATH=$PATH:$M2_HOME/bin:$JAVA_HOME/bin:$VSCODE_HOME/bin:$HUB_HOME/bin
 
 export PATH=$PATH:/usr/local/bin
 
