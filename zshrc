@@ -59,3 +59,6 @@ source $HOME/.aliases
 export PATH=$HOME/.rvm/bin:$PATH
 
 [[ -s "/home/bartek/.gvm/scripts/gvm" ]] && source "/home/bartek/.gvm/scripts/gvm"
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /home/bartek/.asdf/installs/odo/v1.1.0/bin/odo odo
