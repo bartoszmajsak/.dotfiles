@@ -42,9 +42,10 @@ zplug "robbyrussell/oh-my-zsh", as:plugin, use:"lib/*.zsh", defer:2
 
 # Powerlevel9k settings 
 # https://github.com/bhilburn/powerlevel9k
-source $HOME/.powerlevel9k
-zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
+# source $HOME/.powerlevel9k
+# zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
 
+zplug romkatv/powerlevel10k, as:theme, depth:1
 
 # Install plugins if there are plugins that have not been installed
 if ! zplug check --verbose; then
