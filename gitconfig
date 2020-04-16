@@ -14,11 +14,11 @@
 			}; \
 			f"
 	pr-clean = "!`# Cleans all PR branchers`; \
-			 git for-each-ref refs/heads/pr/* --format='%(refname)' | \
-		     while read ref ; do \
-		 	branch=${ref#refs/heads/}; \
-			git branch -D $branch; \
-		     done"
+ 			git for-each-ref refs/heads/pr/* --format='%(refname)' | \
+			while read ref ; do \
+		 		branch=${ref#refs/heads/}; \
+				git branch -D $branch; \
+			done"
 	sq = "!`# Squash all commits to the first one`; \
 		f() { \
 			branch=$(git rev-parse --abbrev-ref HEAD); \
