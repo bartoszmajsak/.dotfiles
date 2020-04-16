@@ -8,8 +8,26 @@
 	po = !git push --set-upstream origin $(git symbolic-ref --short HEAD)
 	lo = log --oneline
 	last = diff-tree --no-commit-id --name-only -r HEAD
-	pr  = "!f() { git fetch -fu ${2:-$(git remote |grep ^upstream || echo origin)} refs/pull/$1/head:pr/$1 && git checkout pr/$1; }; f"
-        pr-clean = "!git for-each-ref refs/heads/pr/* --format='%(refname)' | while read ref ; do branch=${ref#refs/heads/} ; git branch -D $branch ; done"
+	pr  = "!`# Checks out PR to its own branch`; \
+			f() { \
+				git fetch -fu ${2:-$(git remote | grep ^upstream || echo origin)} refs/pull/$1/head:pr/$1 && git checkout pr/$1; \
+			}; \
+			f"
+	pr-clean = "!`# Cleans all PR branchers`; \
+			 git for-each-ref refs/heads/pr/* --format='%(refname)' | \
+		     while read ref ; do \
+		     	branch=${ref#refs/heads/}; \
+		     	git branch -D $branch; \
+		     done"
+	sq = "!`# Squash all commits to the first one`; \
+		f() { \
+			branch=$(git rev-parse --abbrev-ref HEAD); \
+			first_commit=$(git log master..\"$branch\" --oneline | tail -1 | cut -d' ' -f 1); \
+			author=$(git show -s --format='%an <%ae>' \"$first_commit\"); \
+			title=$(git show -s --format='%s' \"$first_commit\"); \
+			git reset $(git merge-base master \"$branch\"); \
+			git add . && git commit --author=\"$author\" --message=\"$title\"; \
+		}; f"
 [pull]
 	rebase = true
 [core]
