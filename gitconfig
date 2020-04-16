@@ -16,8 +16,8 @@
 	pr-clean = "!`# Cleans all PR branchers`; \
 			 git for-each-ref refs/heads/pr/* --format='%(refname)' | \
 		     while read ref ; do \
-		     	branch=${ref#refs/heads/}; \
-		     	git branch -D $branch; \
+		 	branch=${ref#refs/heads/}; \
+			git branch -D $branch; \
 		     done"
 	sq = "!`# Squash all commits to the first one`; \
 		f() { \
