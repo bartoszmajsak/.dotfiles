@@ -14,20 +14,22 @@
 			}; \
 			f"
 	pr-clean = "!`# Cleans all PR branchers`; \
- 			git for-each-ref refs/heads/pr/* --format='%(refname)' | \
-			while read ref ; do \
-		 		branch=${ref#refs/heads/}; \
-				git branch -D $branch; \
-			done"
-	sq = "!`# Squash all commits to the first one`; \
+			 git for-each-ref refs/heads/pr/* --format='%(refname)' | \
+		     while read ref ; do \
+		     	branch=${ref#refs/heads/}; \
+		     	git branch -D $branch; \
+		     done"	
+	sq-to = !"`# Squash all commits to the first one on the branch`; \
 		f() { \
-			branch=$(git rev-parse --abbrev-ref HEAD); \
-			first_commit=$(git log master..\"$branch\" --oneline | tail -1 | cut -d' ' -f 1); \
-			author=$(git show -s --format='%an <%ae>' \"$first_commit\"); \
-			title=$(git show -s --format='%s' \"$first_commit\"); \
-			git reset $(git merge-base master \"$branch\"); \
+			readonly local branch=$1; \
+			readonly local first_commit=$(git log ${2:-master}..\"$branch\" --oneline | tail -1 | cut -d' ' -f 1); \
+			readonly local author=$(git show -s --format='%an <%ae>' \"$first_commit\"); \
+			readonly local title=$(git show -s --format='%s' \"$first_commit\"); \
+			git reset $(git merge-base ${2:-master} \"$branch\"); \
 			git add . && git commit --author=\"$author\" --message=\"$title\"; \
 		}; f"
+	sq = !git sq-to $(git rev-parse --abbrev-ref HEAD)
+
 [pull]
 	rebase = true
 [core]
