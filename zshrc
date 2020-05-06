@@ -68,7 +68,6 @@ export PATH=$HOME/.rvm/bin:$PATH
 [[ -s "/home/bartek/.gvm/scripts/gvm" ]] && source "/home/bartek/.gvm/scripts/gvm"
 
 autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /home/bartek/.asdf/installs/odo/v1.1.0/bin/odo odo
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
