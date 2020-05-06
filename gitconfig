@@ -8,6 +8,8 @@
 	po = !git push --set-upstream origin $(git symbolic-ref --short HEAD)
 	lo = log --oneline
 	last = diff-tree --no-commit-id --name-only -r HEAD
+	anoe = commit -a --amend --no-edit
+	db = !git branch -D $1 && git push origin ":$1"
 	pr  = "!`# Checks out PR to its own branch`; \
 			f() { \
 				git fetch -fu ${2:-$(git remote | grep ^upstream || echo origin)} refs/pull/$1/head:pr/$1 && git checkout pr/$1; \
@@ -34,14 +36,18 @@
 	rebase = true
 [core]
 	excludesfile = ~/.gitignore
-	attributesfile = /home/bartek/.gitattributes
-	pager = diff-so-fancy | less --tabs=4 -RFX
+	attributesfile = ~/.gitattributes
+	pager = delta --plus-color="#012800" --minus-color="#340001"
+
+[interactive]
+	diffFilter = delta --color-only
 
 [diff "golang"]
 	textconv=pygmentize
+
 [color]
 	ui = true
-[color "diff-highlight"]
+[color "highlight"]
 	oldNormal = red bold
 	oldHighlight = red bold 52
 	newNormal = green bold

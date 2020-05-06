@@ -42,7 +42,7 @@ make() {
 zstyle ':completion:*' menu select.
 
 fpath=( ~/.dotfiles/func "${fpath[@]}" )
-autoload -Uz arq idea goland rubymine webstorm charm dclean gh cleanup update
+autoload -Uz arq idea goland rubymine webstorm charm dclean open-gh cleanup update
 
 # History settings
 export HISTFILE=$HOME/.histfile

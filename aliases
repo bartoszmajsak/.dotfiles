@@ -5,3 +5,7 @@ alias cat=bat
 alias find=fd
 alias ls=exa
 alias l="exa -lahF"
+
+## GitHub 
+alias gh-open="xdg-open http://github.com/$(git remote get-url origin | cut -d ':' -f 2) &>/dev/null"
+alias gh-repo="echo ${$(git remote get-url origin | cut -d ':' -f 2)%.git}"
