@@ -21,28 +21,8 @@ export PATH=$PATH:$M2_HOME/bin:$JAVA_HOME/bin:$VSCODE_HOME/bin:$HUB_HOME/bin
 
 export PATH=$PATH:/usr/local/bin
 
-mvn() {
-  project_name=${PWD##*/} 
-  timer=${timer:-$SECONDS}
-  mvn_cmd=$@
-  $M2_HOME/bin/mvn $@; notify_build_status $? "$(($SECONDS - $timer))" "$project_name [mvn $mvn_cmd]"
-
-  unset timer;
-}
-
-make() {
-  project_name=${PWD##*/} 
-  timer=${timer:-$SECONDS}
-  make_cmd=$@
-  /usr/bin/make $@; notify_build_status $? "$(($SECONDS - $timer))" "$project_name [make $make_cmd]"
-
-  unset timer;
-}
-
-zstyle ':completion:*' menu select.
-
 fpath=( ~/.dotfiles/func "${fpath[@]}" )
-autoload -Uz arq idea goland rubymine webstorm charm dclean open-gh cleanup update
+autoload -Uz idea goland rubymine webstorm charm dclean cleanup update make mvn
 
 # History settings
 export HISTFILE=$HOME/.histfile
