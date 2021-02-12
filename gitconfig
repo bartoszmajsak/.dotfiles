@@ -1,6 +1,7 @@
 [user]
 	name = Bartosz Majsak
 	email = bartosz.majsak@gmail.com
+	signingkey = 76A12675F652DA1C
 [alias]
 	history = log --oneline --graph --decorate --all
 	st = status
@@ -69,3 +70,5 @@
 #	old = red bold
 #	new = green bold
 #	whitespace = red reverse
+[commit]
+	gpgsign = true
