@@ -14,6 +14,7 @@ export DOCKER_HOST="unix:///var/run/docker.sock"
 export M2_HOME=/usr/bin/mvn
 export M2_REPO=$HOME/.m2/repository
 export JAVA_HOME=/usr/bin/java
+export ZPLUG_HOME=$HOME/.zplug
 VSCODE_HOME=$HOME/ide/code
 HUB_HOME=$HOME/.hub
 
@@ -36,18 +37,18 @@ setopt EXTENDED_HISTORY
 setopt share_history
 
 source $HOME/.zplugrc
-
 source $HOME/.nvm/nvm.sh
-
-# Load aliases
 source $HOME/.aliases
-
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH=$HOME/.rvm/bin:$PATH
 
 [[ -s "/home/bartek/.gvm/scripts/gvm" ]] && source "/home/bartek/.gvm/scripts/gvm"
 
-autoload -U +X bashcompinit && bashcompinit
-
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+zstyle ':completion:*' menu select.
+zstyle ':completion:*' special-dirs true
+autoload -U +X bashcompinit && bashcompinit
+autoload -Uz compinit && compinit
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH=$HOME/.rvm/bin:$PATH
