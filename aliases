@@ -2,7 +2,7 @@ alias setclip='xclip -selection c'
 alias getclip='xclip -selection clipboard -o'
 alias noidea="rm -rf $(find . -type f -name '*.iml') && rm -rf .idea"
 alias cat=bat
-alias find=fd
+#alias find=fd
 alias ls=exa
 alias l="exa -lahF"
 
