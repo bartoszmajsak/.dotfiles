@@ -11,6 +11,8 @@
 	last = diff-tree --no-commit-id --name-only -r HEAD
 	anoe = commit -a --amend --no-edit
 	db = !git branch -D $1 && git push origin ":$1"
+	prev = checkout HEAD^1
+        next = "!sh -c 'git log --reverse --pretty=%H $(git branch --show-current) | awk \"/$(git rev-parse HEAD)/{getline;print}\" | xargs git checkout'"
 	pr  = "!`# Checks out PR to its own branch`; \
 			f() { \
 				git fetch -fu ${2:-$(git remote | grep ^upstream || echo origin)} refs/pull/$1/head:pr/$1 && git checkout pr/$1; \
@@ -32,6 +34,7 @@
 			git add . && git commit --author=\"$author\" --message=\"$title\"; \
 		}; f"
 	sq = !git sq-to $(git rev-parse --abbrev-ref HEAD)
+	clean-remote = ! git branch -r | awk '{print }' | egrep -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk '{print }' | xargs git branch -d
 
 [pull]
 	rebase = true

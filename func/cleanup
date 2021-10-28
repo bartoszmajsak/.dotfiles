@@ -4,6 +4,5 @@ cleanup() {
   sudo dnf clean all
   sudo dnf autoremove -y
   sudo pkcon refresh force -c -1
-  pushd ~ && rm -rf `find . -type d -name target` && popd
   sudo fstrim -av
 }

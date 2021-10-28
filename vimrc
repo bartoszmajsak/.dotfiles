@@ -10,13 +10,22 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'flazz/vim-colorschemes'
+Plugin 'ekalinin/Dockerfile.vim'
+
+" themes
+Plugin 'jcherven/jummidark.vim'
+Plugin 'dracula/vim'
 
 " The following are examples of different formats supported.
 " Keep Plugin commands between vundle#begin/end.
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
+
+colorscheme dracula
+
 filetype plugin indent on    " required
+
 " To ignore plugin indent changes, instead use:
 "filetype plugin on
 "

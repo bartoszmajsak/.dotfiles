@@ -23,7 +23,7 @@ export PATH=$PATH:$M2_HOME/bin:$JAVA_HOME/bin:$VSCODE_HOME/bin:$HUB_HOME/bin
 export PATH=$PATH:/usr/local/bin
 
 fpath=( ~/.dotfiles/func "${fpath[@]}" )
-autoload -Uz idea goland rubymine webstorm charm dclean cleanup update make mvn
+autoload -Uz idea goland rubymine webstorm charm dclean cleanup update make mvn fedora-update fedora-post-update
 
 # History settings
 export HISTFILE=$HOME/.histfile

@@ -16,4 +16,6 @@ windows:
   - docs:
     - cd ../istio-workspace-docs-site
     - source .autoenv.zsh
+  - gh-changelog:
+    - cd ../../bartoszmajsak/github-changelog-generator
   - k9s: k9s
