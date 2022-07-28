@@ -51,5 +51,7 @@ gh completion -s zsh > "${ZSH_CACHE_DIR}"/completions/_gh
 autoload -U +X bashcompinit && bashcompinit
 autoload -Uz compinit && compinit
 
+export PATH="${PATH}:${HOME}/.krew/bin:${HOME}/.local/bin" 
+
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH=$HOME/.rvm/bin:$PATH
+export PATH="$HOME/.rvm/bin:$PATH"
