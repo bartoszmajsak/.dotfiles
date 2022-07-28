@@ -1,5 +1,5 @@
 [user]
-	name = Bartosz Majsak
+	name = bartoszmajsak
 	email = bartosz.majsak@gmail.com
 	signingkey = 76A12675F652DA1C
 [alias]
@@ -42,6 +42,7 @@
 	excludesfile = ~/.gitignore
 	attributesfile = ~/.gitattributes
 	pager = delta --plus-color="#012800" --minus-color="#340001"
+	symlinks = true
 
 [interactive]
 	diffFilter = delta --color-only
@@ -75,3 +76,8 @@
 #	whitespace = red reverse
 [commit]
 	gpgsign = true
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
