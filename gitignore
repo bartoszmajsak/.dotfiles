@@ -1,6 +1,7 @@
 .autoenv*.zsh
 .env
 .envrc
+.secrets
 *.ignore
 .tool-versions
 details.rb
