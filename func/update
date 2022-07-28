@@ -2,5 +2,7 @@ update() {
   sudo dnf update -y
   asdf update
   asdf plugin-update --all
+  asdf plugin-list | xargs -I {} asdf install {} latest
+  asdf plugin-list | grep -Ev '^(java)' | xargs -I {} asdf global {} latest
   zplug update 
 }
