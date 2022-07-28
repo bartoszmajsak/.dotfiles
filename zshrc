@@ -47,6 +47,7 @@ source $HOME/.aliases
 
 zstyle ':completion:*' menu select.
 zstyle ':completion:*' special-dirs true
+gh completion -s zsh > "${ZSH_CACHE_DIR}"/completions/_gh
 autoload -U +X bashcompinit && bashcompinit
 autoload -Uz compinit && compinit
 
