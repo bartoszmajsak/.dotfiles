@@ -11,3 +11,5 @@ openshift.local.clusterup/
 telepresence.log
 
 *.env
+
+.worktree/

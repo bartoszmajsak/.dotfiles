@@ -1,0 +1,14 @@
+name: maistra-prow 
+root: ~/code/golang/src/github.com/bartoszmajsak/
+
+windows:
+  - code: 
+    - source .autoenv.zsh
+  - template:
+    - cd template-golang
+    - source .autoenv.zsh
+  - sandbox:
+    - source .autoenv.zsh
+  - sth:
+    - ls 
+  - k9s: k9s

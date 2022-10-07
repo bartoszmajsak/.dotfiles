@@ -41,7 +41,7 @@
 [core]
 	excludesfile = ~/.gitignore
 	attributesfile = ~/.gitattributes
-	pager = delta --plus-color="#012800" --minus-color="#340001"
+	pager = delta --plus-style="#012800" --minus-style="#340001"
 	symlinks = true
 
 [interactive]
