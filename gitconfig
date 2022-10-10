@@ -12,18 +12,7 @@
 	anoe = commit -a --amend --no-edit
 	db = !git branch -D $1 && git push origin ":$1"
 	prev = checkout HEAD^1
-        next = "!sh -c 'git log --reverse --pretty=%H $(git branch --show-current) | awk \"/$(git rev-parse HEAD)/{getline;print}\" | xargs git checkout'"
-	pr  = "!`# Checks out PR to its own branch`; \
-			f() { \
-				git fetch -fu ${2:-$(git remote | grep ^upstream || echo origin)} refs/pull/$1/head:pr/$1 && git checkout pr/$1; \
-			}; \
-			f"
-	pr-clean = "!`# Cleans all PR branchers`; \
-			 git for-each-ref refs/heads/pr/* --format='%(refname)' | \
-		     while read ref ; do \
-		     	branch=${ref#refs/heads/}; \
-		     	git branch -D $branch; \
-		     done"	
+    next = "!sh -c 'git log --reverse --pretty=%H $(git branch --show-current) | awk \"/$(git rev-parse HEAD)/{getline;print}\" | xargs git checkout'"
 	sq-to = !"`# Squash all commits to the first one on the branch`; \
 		f() { \
 			readonly local branch=$1; \

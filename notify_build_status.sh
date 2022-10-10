@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 # This function expectes to be called with 3 parameters
 # $1 - status code of the operation it's wrapping

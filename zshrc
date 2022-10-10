@@ -5,6 +5,9 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# Installs missing required tools
+source ~/.install_tools.sh
+
 source ~/.notify_build_status.sh
 
 # User configuration
@@ -55,3 +58,4 @@ export PATH="${PATH}:${HOME}/.krew/bin:${HOME}/.local/bin"
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$HOME/.rvm/bin:$PATH"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

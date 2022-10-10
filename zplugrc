@@ -1,6 +1,7 @@
 # Install zplug if it's not installed
-if [[ ! -d $ZPLUG_HOME ]]; then
-  curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh| zsh
+if ! command -v zplug &> /dev/null 
+then
+  curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
 fi
 
 # Init zplug
