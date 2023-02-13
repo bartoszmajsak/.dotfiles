@@ -12,4 +12,6 @@ telepresence.log
 
 *.env
 
+*.ign.*
+
 .worktree/
