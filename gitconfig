@@ -30,39 +30,31 @@
 [core]
 	excludesfile = ~/.gitignore
 	attributesfile = ~/.gitattributes
-	pager = delta --plus-style="#012800" --minus-style="#340001"
+	pager = delta
 	symlinks = true
 
 [interactive]
-	diffFilter = delta --color-only
+	diffFilter = delta --color-only --features=interactive
 
 [delta]
 	features = side-by-side line-numbers decorations
 	whitespace-error-style = 22 reverse
 
-[delta "decorations"]
-    commit-decoration-style = bold yellow box ul
-    file-style = bold yellow ul
-    file-decoration-style = none
+[delta "interactive"]
+    keep-plus-minus-markers = false
 
+[delta "decorations"]
+    commit-decoration-style = blue ol
+    commit-style = raw
+    file-style = omit
+    hunk-header-decoration-style = blue box
+    hunk-header-file-style = red
+    hunk-header-line-number-style = "#067a00"
+    hunk-header-style = file line-number syntax
 
 [diff "golang"]
 	textconv=pygmentize
 
-# [color]
-#	ui = true
-#[color "highlight"]
-#	oldNormal = red bold
-#	oldHighlight = red bold 52
-#	newNormal = green bold
-#	newHighlight = green bold 22
-#[color "diff"]
-#	meta = 11
-#	frag = magenta bold
-#	commit = yellow bold
-#	old = red bold
-#	new = green bold
-#	whitespace = red reverse
 [commit]
 	gpgsign = true
 [filter "lfs"]
