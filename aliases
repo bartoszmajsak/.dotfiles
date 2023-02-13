@@ -1,11 +1,14 @@
+# General purpose aliases
 alias setclip='xclip -selection c'
 alias getclip='xclip -selection clipboard -o'
-alias noidea="rm -rf $(find . -type f -name '*.iml') && rm -rf .idea"
 alias cat=bat
-#alias find=fd
 alias ls=exa
 alias l="exa -lahF"
 
-## GitHub 
-alias gh-open="xdg-open http://github.com/$(git remote get-url origin | cut -d ':' -f 2) &>/dev/null"
-alias gh-repo="echo ${$(git remote get-url origin | cut -d ':' -f 2)%.git}"
+# dev aliases
+alias noidea="rm -rf $(find . -type f -name '*.iml') && rm -rf .idea"
+
+## k8s
+alias i=istioctl
+alias kubectl=kubecolor
+alias crc-adm="oc login -u kubeadmin -p $(crc config get kubeadmin-password | tr -d ' ' | cut -d':' -f 2)"
