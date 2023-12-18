@@ -1,0 +1,11 @@
+{
+  "consent-telemetry": "no",
+  "cpus": 8,
+  "disk-size": 64,
+  "enable-cluster-monitoring": true,
+  "host-network-access": true,
+  "kubeadmin-password": "letmein",
+  "memory": 32768,
+  "network-mode": "user",
+  "pull-secret-file": "/home/bartek/.crc/secret.json"
+}
