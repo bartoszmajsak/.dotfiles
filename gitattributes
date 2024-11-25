@@ -1,1 +1,2 @@
 *.go diff=golang
+.git/ export-ignore
