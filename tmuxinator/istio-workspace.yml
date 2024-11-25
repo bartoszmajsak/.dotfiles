@@ -7,7 +7,6 @@ root: ~/code/golang/src/github.com/maistra/istio-workspace
 windows:
   - code: 
     - source .autoenv.zsh
-    - ide
   - ike-demo:
     - cd ../ike-demo
     - source .autoenv.zsh
