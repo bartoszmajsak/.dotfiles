@@ -1,3 +1,6 @@
+[include]
+	path = ~/.themes.github
+
 [user]
 	name = bartoszmajsak
 	email = bartosz.majsak@gmail.com
@@ -7,12 +10,16 @@
 	st = status
 	co = checkout
 	po = !git push --set-upstream origin $(git symbolic-ref --short HEAD)
-	lo = log --oneline
+	lo = log --color --pretty=format:\"%C(auto)%h %d %Cblue%s %Creset (by %an)\"
 	last = diff-tree --no-commit-id --name-only -r HEAD
 	anoe = commit -a --amend --no-edit
-	db = !git branch -D $1 && git push origin ":$1"
+	delete-branch = !git branch -D $1 && git push origin ":$1"
+	worktree-switch = "!f() { cd  ../\"$1\" \"$1\"; }; f"
+	worktree-add = "!f() { git worktree add  ../\"$1\" \"$1\"; }; f"
+	worktree-add-pr = "!f() { gh pr checkout $1 -b pr-$1; git co -; git worktree-add pr-$1; }; f"
+	worktree-remove-pr = "!f() { git worktree remove -f pr-$1; }; f"
 	prev = checkout HEAD^1
-    next = "!sh -c 'git log --reverse --pretty=%H $(git branch --show-current) | awk \"/$(git rev-parse HEAD)/{getline;print}\" | xargs git checkout'"
+	next = "!sh -c 'git log --reverse --pretty=%H $(git branch --show-current) | awk \"/$(git rev-parse HEAD)/{getline;print}\" | xargs git checkout'"
 	sq-to = !"`# Squash all commits to the first one on the branch`; \
 		f() { \
 			readonly local branch=$1; \
@@ -24,9 +31,16 @@
 		}; f"
 	sq = !git sq-to $(git rev-parse --abbrev-ref HEAD)
 	clean-remote = ! git branch -r | awk '{print }' | egrep -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk '{print }' | xargs git branch -d
+	stash-named = ! git stash apply "$(git stash list --pretty='%gd %s'| grep ":$1" | head -1 | gawk '{print $1}')"
+	today = log --since='midnight' --author=bartoszmajsak --pretty=format:'- %s'
+	yesterday = log --since='1 day ago' --until='midnight' --author=bartoszmajsak --pretty=format:'- %s'
+	push-fork = ! git push --set-upstream fork $(git rev-parse --abbrev-ref HEAD)
+	last-commit = log -1 --pretty=format:'%H'
+	stack-pr = log --grep="#stack-pr" --pretty=format:\"%h %s\"
 
 [pull]
 	rebase = true
+
 [core]
 	excludesfile = ~/.gitignore
 	attributesfile = ~/.gitattributes
@@ -37,28 +51,23 @@
 	diffFilter = delta --color-only --features=interactive
 
 [delta]
-	features = side-by-side line-numbers decorations
+	features = side-by-side line-numbers Coldark-Dark
 	whitespace-error-style = 22 reverse
 
 [delta "interactive"]
-    keep-plus-minus-markers = false
-
-[delta "decorations"]
-    commit-decoration-style = blue ol
-    commit-style = raw
-    file-style = omit
-    hunk-header-decoration-style = blue box
-    hunk-header-file-style = red
-    hunk-header-line-number-style = "#067a00"
-    hunk-header-style = file line-number syntax
-
-[diff "golang"]
-	textconv=pygmentize
+	keep-plus-minus-markers = false
 
 [commit]
 	gpgsign = true
+	template = /home/bartek/.gittemplates/commit/conventional
+
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+[init]
+	defaultBranch = main
+
+#[includeIf "hasconfig:remote.*.url:git@github.com:opendatahub-io/opendatahub-operator.git"]
+#	path = ~/.gitconfig-odh
