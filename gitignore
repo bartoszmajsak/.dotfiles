@@ -1,17 +1,19 @@
+.air.toml
 .autoenv*.zsh
 .env
 .envrc
 .secrets
+
 *.ignore
 .tool-versions
-details.rb
-
-openshift.local.clusterup/
 
 telepresence.log
 
-*.env
 
 *.ign.*
 
 .worktree/
+.vscode/
+.tmp/
+
+.mirrord/
