@@ -56,6 +56,9 @@ autoload -Uz compinit && compinit
 
 export PATH="${PATH}:${HOME}/.krew/bin:${HOME}/.local/bin" 
 
+# Snap bin
+export PATH="${PATH}:/var/lib/snapd/snap/bin"
+
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$HOME/.rvm/bin:$PATH"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
