@@ -1,13 +1,22 @@
 fedora-update() {
+  if [[ -z "${1:-}" ]]; then
+    echo "Usage: fedora-update <releasever>" >&2
+    echo "  e.g. fedora-update 42" >&2
+    return 1
+  fi
+
   sudo dnf upgrade --refresh
   sudo dnf install dnf-plugin-system-upgrade
-  sudo dnf system-upgrade download --releasever=$1
+  sudo dnf system-upgrade download --releasever="$1"
+
+  echo ""
+  echo "Download complete. Ready to reboot into upgrade."
+  read -q "REPLY?Reboot now? [y/N] " || { echo "\nReboot skipped."; return 0; }
+  echo ""
   sudo dnf system-upgrade reboot
 }
 
 fedora-post-update() {
-    sudo dnf install rpmconf
-    sudo rpmconf -a
+  sudo dnf install rpmconf
+  sudo rpmconf -a
 }
-
-
