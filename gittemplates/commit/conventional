@@ -1,26 +1,27 @@
-### Conventional commits cheat sheet
-#
-# fix: patches a bug in the codebase
-# feat: introduces a new feature to the codebase
-# refactor: code changes that improve structure/readability without changing behavior
-# docs: used when modifying/creating documentation
-# build: changes affecting the build system or dependencies
-# deps: for dependency updates or modifications
-# test: changes related to tests (adding or modifying)
-# ci: CI configuration and script changes
-#
-#
-### Title
+;;; Conventional commits cheat sheet
+;
+; fix: patches a bug in the codebase
+; feat: introduces a new feature to the codebase
+; refactor: code changes that improve structure/readability without changing behavior
+; docs: used when modifying/creating documentation
+; build: changes affecting the build system or dependencies
+; deps: for dependency updates or modifications
+; test: changes related to tests (adding or modifying)
+; ci: CI configuration and script changes
+;
+;
+;;; Title
 
-### Why this change
-
-
-### What is changed
+;;; Why this change
 
 
-### Reference to issue
+;;; What is changed
 
-### Attributions (uncomment)
-# Co-authored-by: Aslak Knutsen <aslak@4fs.no>
-# Co-authored-by: Cameron Garrison <cgarriso@redhat.com> 
 
+;;; Reference to issue
+
+;;; Attributions (uncomment)
+; Co-authored-by: Aslak Knutsen <aslak@4fs.no>
+; Co-authored-by: Cameron Garrison <cgarriso@redhat.com> 
+
+Signed-off-by: Bartosz Majsak <bartosz.majsak@gmail.com>

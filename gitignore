@@ -6,14 +6,21 @@
 
 *.ignore
 .tool-versions
+mise.toml
 
 telepresence.log
 
-
+# Always ignore such patterns
 *.ign.*
+*.ign
 
+
+.idea/
 .worktree/
 .vscode/
 .tmp/
 
 .mirrord/
+
+.cursor/
+.claude/

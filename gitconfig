@@ -2,9 +2,15 @@
 	path = ~/.themes.github
 
 [user]
-	name = bartoszmajsak
+	name = Bartosz Majsak
 	email = bartosz.majsak@gmail.com
 	signingkey = 76A12675F652DA1C
+[github]
+	user = bartoszmajsak
+
+[includeIf "gitdir:~/code/redhat/ossm/konflux/"]
+	path = ~/.gitconfig-rh-gitlab  
+
 [alias]
 	history = log --oneline --graph --decorate --all
 	st = status
@@ -13,13 +19,16 @@
 	lo = log --color --pretty=format:\"%C(auto)%h %d %Cblue%s %Creset (by %an)\"
 	last = diff-tree --no-commit-id --name-only -r HEAD
 	anoe = commit -a --amend --no-edit
-	delete-branch = !git branch -D $1 && git push origin ":$1"
+	
 	worktree-switch = "!f() { cd  ../\"$1\" \"$1\"; }; f"
 	worktree-add = "!f() { git worktree add  ../\"$1\" \"$1\"; }; f"
 	worktree-add-pr = "!f() { gh pr checkout $1 -b pr-$1; git co -; git worktree-add pr-$1; }; f"
 	worktree-remove-pr = "!f() { git worktree remove -f pr-$1; }; f"
+	
+	find-commit = "!f() { git log --pretty=format:\"%h %s\" | grep -E \"^[a-f0-9]+ $1$\" | awk \"{print \\$1}\"; }; f"
 	prev = checkout HEAD^1
 	next = "!sh -c 'git log --reverse --pretty=%H $(git branch --show-current) | awk \"/$(git rev-parse HEAD)/{getline;print}\" | xargs git checkout'"
+	
 	sq-to = !"`# Squash all commits to the first one on the branch`; \
 		f() { \
 			readonly local branch=$1; \
@@ -30,13 +39,16 @@
 			git add . && git commit --author=\"$author\" --message=\"$title\"; \
 		}; f"
 	sq = !git sq-to $(git rev-parse --abbrev-ref HEAD)
-	clean-remote = ! git branch -r | awk '{print }' | egrep -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk '{print }' | xargs git branch -d
-	stash-named = ! git stash apply "$(git stash list --pretty='%gd %s'| grep ":$1" | head -1 | gawk '{print $1}')"
+	
+	
 	today = log --since='midnight' --author=bartoszmajsak --pretty=format:'- %s'
 	yesterday = log --since='1 day ago' --until='midnight' --author=bartoszmajsak --pretty=format:'- %s'
 	push-fork = ! git push --set-upstream fork $(git rev-parse --abbrev-ref HEAD)
 	last-commit = log -1 --pretty=format:'%H'
+	
 	stack-pr = log --grep="#stack-pr" --pretty=format:\"%h %s\"
+        cb = ! git branch --show-current | rev | cut -d'/' -f 1 | rev
+	current-branch = cb
 
 [pull]
 	rebase = true
@@ -46,6 +58,8 @@
 	attributesfile = ~/.gitattributes
 	pager = delta
 	symlinks = true
+	commentchar = ";"
+	hooksPath = /home/bartek/.githooks
 
 [interactive]
 	diffFilter = delta --color-only --features=interactive
@@ -71,3 +85,5 @@
 
 #[includeIf "hasconfig:remote.*.url:git@github.com:opendatahub-io/opendatahub-operator.git"]
 #	path = ~/.gitconfig-odh
+[help]
+	autocorrect = 20
