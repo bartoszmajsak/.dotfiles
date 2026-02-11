@@ -1,12 +1,15 @@
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+#if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+#  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+#fi
 
-# Installs missing required tools
-source ~/.install_tools.sh
+eval "$(mise activate zsh)"
+
+# --- dedupe PATH and ensure mise installs win over system ---
+typeset -U path PATH  # dedupe while preserving order
+rehash  # refresh zsh command cache
 
 source ~/.notify_build_status.sh
 
@@ -14,51 +17,103 @@ source ~/.notify_build_status.sh
 export EDITOR=vim
 export TERM="xterm-256color"
 export DOCKER_HOST="unix:///var/run/docker.sock"
-export M2_HOME=/usr/bin/mvn
 export M2_REPO=$HOME/.m2/repository
-export JAVA_HOME=/usr/bin/java
-export ZPLUG_HOME=$HOME/.zplug
-VSCODE_HOME=$HOME/ide/code
-HUB_HOME=$HOME/.hub
-
-export PATH=$PATH:$M2_HOME/bin:$JAVA_HOME/bin:$VSCODE_HOME/bin:$HUB_HOME/bin
-
-export PATH=$PATH:/usr/local/bin
 
 fpath=( ~/.dotfiles/func "${fpath[@]}" )
-autoload -Uz dclean cleanup update make mvn fedora-update fedora-post-update
+autoload -Uz dclean diskclean diskusage cleanup update mvn fedora-update fedora-post-update
 
 # History settings
 export HISTFILE=$HOME/.histfile
-export HISTSIZE=10000
-export SAVEHIST=10000
+export HISTSIZE=1000000000
+export SAVEHIST=${HISTSIZE}
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_EXPIRE_DUPS_FIRST
 setopt HIST_SAVE_NO_DUPS
 setopt APPEND_HISTORY
 setopt EXTENDED_HISTORY
-setopt share_history
+setopt SHARE_HISTORY
+setopt INTERACTIVE_COMMENTS
 
-source $HOME/.zplugrc
-source $HOME/.nvm/nvm.sh
 source $HOME/.aliases
 
-[[ -s "/home/bartek/.gvm/scripts/gvm" ]] && source "/home/bartek/.gvm/scripts/gvm"
+# Create cache and completions dir and add to $fpath
+ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+mkdir -p "$ZSH_CACHE_DIR/completions"
+(( ${fpath[(Ie)"$ZSH_CACHE_DIR/completions"]} )) || fpath=("$ZSH_CACHE_DIR/completions" $fpath)
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-zstyle ':completion:*' menu select.
+zstyle ':completion:*' menu select
 zstyle ':completion:*' special-dirs true
-gh completion -s zsh > "${ZSH_CACHE_DIR}"/completions/_gh
+
+# Key bindings
+if [[ -n "${terminfo[kLFT5]}" ]]; then
+  bindkey "${terminfo[kLFT5]}" backward-word
+  bindkey "${terminfo[kRIT5]}" forward-word
+fi
+
+if [[ -n "${terminfo[kdch1]}" ]]; then
+  bindkey "${terminfo[kdch1]}" delete-char
+fi
+
+# Auto-generate completions - run manually with: regen-completions
+regen-completions() {
+  local cache_dir="${ZSH_CACHE_DIR}/completions"
+  mkdir -p "$cache_dir"
+
+  for spec in mise $(mise ls --installed --json 2>/dev/null | jq -r 'keys[]' 2>/dev/null | sort -u); do
+    local cmd="${spec##*:}"
+    echo "$cmd"
+    (( $+commands[$cmd] )) || continue
+    local cache_file="$cache_dir/_${cmd}"
+
+    echo -n "Generating $cmd... "
+    timeout 2s "$cmd" completion zsh > "$cache_file" 2>/dev/null ||
+    timeout 2s "$cmd" completions zsh > "$cache_file" 2>/dev/null ||
+    timeout 2s "$cmd" completion -s zsh > "$cache_file" 2>/dev/null ||
+    timeout 2s "$cmd" gen-completions --shell zsh > "$cache_file" 2>/dev/null ||
+    { rm -f "$cache_file" 2>/dev/null; echo "skip"; continue }
+    echo "ok"
+  done
+
+  rm -f ~/.zcompdump*
+  echo "Done. Restart shell to apply."
+}
+
 autoload -U +X bashcompinit && bashcompinit
 autoload -Uz compinit && compinit
 
-export PATH="${PATH}:${HOME}/.krew/bin:${HOME}/.local/bin" 
+export PATH="${HOME}/.krew/bin:${PATH}" 
 
 # Snap bin
-export PATH="${PATH}:/var/lib/snapd/snap/bin"
+export PATH="/var/lib/snapd/snap/bin:${PATH}"
 
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$HOME/.rvm/bin:$PATH"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# Needs to be at the end of zshrc
+eval "$(starship init zsh)"
+POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
+
+### Added by Zinit's installer
+if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
+    print -P "%F{33} %F{220}Installing %F{33}ZDHARMA-CONTINUUM%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
+    command mkdir -p "$HOME/.local/share/zinit" && command chmod g-rwX "$HOME/.local/share/zinit"
+    command git clone https://github.com/zdharma-continuum/zinit "$HOME/.local/share/zinit/zinit.git" && \
+        print -P "%F{33} %F{34}Installation successful.%f%b" || \
+        print -P "%F{160} The clone has failed.%f%b"
+fi
+
+source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
+
+# Load a few important annexes, without Turbo
+# (this is currently required for annexes)
+zinit light-mode for \
+    zdharma-continuum/zinit-annex-as-monitor \
+    zdharma-continuum/zinit-annex-bin-gem-node \
+    zdharma-continuum/zinit-annex-patch-dl \
+    zdharma-continuum/zinit-annex-rust
+
+
+### End of Zinit's installer chunk
+
+source ${HOME}/.zinitrc
+eval "$(atuin init zsh)"
+export PATH="$HOME/.local/bin:$PATH"

@@ -55,7 +55,7 @@ zplug "lib/completion", 				from:oh-my-zsh
 
 zplug "robbyrussell/oh-my-zsh", as:plugin, use:"lib/*.zsh", defer:2
 
-zplug romkatv/powerlevel10k, as:theme, depth:1
+#zplug romkatv/powerlevel10k, as:theme, depth:1
 
 # Install plugins if there are plugins that have not been installed
 if ! zplug check --verbose; then
