@@ -1,14 +1,20 @@
 # General purpose aliases
-alias setclip='xclip -selection c'
-alias getclip='xclip -selection clipboard -o'
+if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+  alias setclip='wl-copy'
+  alias getclip='wl-paste'
+else
+  alias setclip='xclip -selection c'
+  alias getclip='xclip -selection clipboard -o'
+fi
 alias cat=bat
-alias ls=exa
-alias l="exa -lahF"
-
-# dev aliases
-alias noidea="rm -rf $(find . -type f -name '*.iml') && rm -rf .idea"
+alias ls=lsd
+alias l="ls -lahF"
 
 ## k8s
 alias i=istioctl
 alias kubectl=kubecolor
-alias crc-adm="oc login -u kubeadmin -p $(crc config get kubeadmin-password | tr -d ' ' | cut -d':' -f 2)"
+alias k=kubectl
+crc-adm() { oc login -u kubeadmin -p "$(crc config get kubeadmin-password | tr -d ' ' | cut -d':' -f 2)"; }
+
+# dev
+alias goland="GOROOT=$(go env GOROOT) GOPATH=$(go env GOPATH) goland . > /dev/null 2>&1 &"
