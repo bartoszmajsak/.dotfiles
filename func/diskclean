@@ -1,40 +1,57 @@
 diskclean() {
-  local threshold_mb="${1:-500}"
+  local interactive=false
+  local threshold_mb=500
   local total_freed=0
 
-  echo "=== Disk cleaner (threshold: ${threshold_mb}MB) ==="
+  # Parse flags
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -i|--interactive) interactive=true; shift ;;
+      *) threshold_mb="$1"; shift ;;
+    esac
+  done
+
+  echo "=== Disk cleaner (threshold: ${threshold_mb}MB, interactive: ${interactive}) ==="
   echo ""
 
   # --- Tool-native cleaners ---
-  # Each entry: description, size check path, clean command
+  # Each entry: label|dir|clean command|hint
   local -a cleaners=(
-    "Go build cache|$(go env GOCACHE 2>/dev/null)|go clean -cache"
-    "Go module cache|${HOME}/go/pkg/mod|go clean -modcache"
-    "Go imports cache|${HOME}/.cache/goimports|rm -rf ${HOME}/.cache/goimports"
-    "gopls cache|${HOME}/.cache/gopls|rm -rf ${HOME}/.cache/gopls"
-    "npm cache|${HOME}/.npm|npm cache clean --force"
-    "pip cache|${HOME}/.cache/pip|pip cache purge"
-    "uv cache|${HOME}/.cache/uv|uv cache clean"
-    "Flatpak unused|/var/lib/flatpak|sudo flatpak uninstall --unused -y"
-    "Trash|${HOME}/.local/share/Trash|rm -rf ${HOME}/.local/share/Trash/*"
-    "Coredumps|/var/lib/systemd/coredump|sudo coredumpctl clean"
+    "Go build cache|$(go env GOCACHE 2>/dev/null)|go clean -cache|Rebuilt on next go build"
+    "Go module cache|${HOME}/go/pkg/mod|go clean -modcache|Re-downloaded on next go mod download"
+    "Go imports cache|${HOME}/.cache/goimports|rm -rf ${HOME}/.cache/goimports|Rebuilt by gopls"
+    "gopls cache|${HOME}/.cache/gopls|rm -rf ${HOME}/.cache/gopls|Rebuilt by gopls on next open"
+    "npm cache|${HOME}/.npm|npm cache clean --force|Re-downloaded on next npm install"
+    "pip cache|${HOME}/.cache/pip|pip cache purge|Re-downloaded on next pip install"
+    "uv cache|${HOME}/.cache/uv|uv cache clean|Re-downloaded on next uv install"
+    "Flatpak unused|/var/lib/flatpak|sudo flatpak uninstall --unused -y|Removes unreferenced runtimes"
+    "Trash|${HOME}/.local/share/Trash|rm -rf ${HOME}/.local/share/Trash/*|Permanently deletes trashed files"
+    "Coredumps|/var/lib/systemd/coredump|sudo coredumpctl clean|Removes old crash dumps"
   )
 
+  local entry label rest dir cmd hint size_kb size_mb new_kb freed_mb
   for entry in "${cleaners[@]}"; do
-    local label="${entry%%|*}"
-    local rest="${entry#*|}"
-    local dir="${rest%%|*}"
-    local cmd="${rest#*|}"
+    label="${entry%%|*}"
+    rest="${entry#*|}"
+    dir="${rest%%|*}"
+    rest="${rest#*|}"
+    cmd="${rest%%|*}"
+    hint="${rest#*|}"
 
     [[ -d "$dir" ]] || continue
-    local size_kb=$(du -sk "$dir" 2>/dev/null | cut -f1)
-    local size_mb=$((size_kb / 1024))
+    size_kb=$(du -sk "$dir" 2>/dev/null | cut -f1)
+    size_mb=$((size_kb / 1024))
 
     if (( size_mb >= threshold_mb )); then
+      if $interactive; then
+        printf "  %-25s %4dMB  (%s)\n" "$label" "$size_mb" "$hint"
+        read -q "REPLY?    Clean? [y/N] " || { echo "  skipped"; continue; }
+        echo ""
+      fi
       printf "  %-25s %4dMB -> cleaning... " "$label" "$size_mb"
       if eval "$cmd" >/dev/null 2>&1; then
-        local new_kb=$(du -sk "$dir" 2>/dev/null | cut -f1)
-        local freed_mb=$(( (size_kb - new_kb) / 1024 ))
+        new_kb=$(du -sk "$dir" 2>/dev/null | cut -f1)
+        freed_mb=$(( (size_kb - new_kb) / 1024 ))
         total_freed=$((total_freed + freed_mb))
         echo "freed ${freed_mb}MB"
       else
@@ -49,19 +66,26 @@ diskclean() {
 
   # --- Discover unknown large dirs in ~/.cache ---
   echo "--- Unclaimed dirs in ~/.cache above ${threshold_mb}MB ---"
-  local known_pattern="go-build|goimports|gopls|pip|uv"
-  local found_unknown=0
-  while IFS=$'\t' read -r size dir; do
-    local name="${dir##*/}"
-    if [[ ! "$name" =~ ^(${known_pattern})$ ]]; then
-      printf "  %-25s %s\n" "$name" "$size"
-      found_unknown=1
+  local known_pattern="^(go-build|goimports|gopls|pip|uv)$"
+  local found_unknown=0 cache_dir size_hr name
+  du -sh ~/.cache/*/ 2>/dev/null | sort -rh | while IFS=$'\t' read -r size_hr cache_dir; do
+    size_kb=$(du -sk "$cache_dir" 2>/dev/null | cut -f1)
+    (( size_kb / 1024 >= threshold_mb )) || continue
+    name="${cache_dir%/}"
+    name="${name##*/}"
+    [[ "$name" =~ ${known_pattern} ]] && continue
+    printf "  %-25s %s\n" "$name" "$size_hr"
+    found_unknown=1
+    if $interactive; then
+      read -q "REPLY?    Delete ${cache_dir}? [y/N] " || { echo "  skipped"; continue; }
+      echo ""
+      local before_kb=$size_kb
+      rm -rf "$cache_dir"
+      freed_mb=$((before_kb / 1024))
+      total_freed=$((total_freed + freed_mb))
+      echo "    freed ${freed_mb}MB"
     fi
-  done < <(du -sh ~/.cache/*/ 2>/dev/null | sort -rh | awk -F'\t' -v t="${threshold_mb}" '{
-    cmd = "du -sk " $2 " 2>/dev/null"
-    cmd | getline line; close(cmd)
-    split(line, a); if (a[1]/1024 >= t) print $1 "\t" $2
-  }')
+  done
   (( found_unknown )) || echo "  (none)"
 
   echo ""
