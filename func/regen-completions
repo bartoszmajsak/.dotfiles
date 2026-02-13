@@ -1,0 +1,111 @@
+regen-completions() {
+  local cache_dir="${ZSH_CACHE_DIR}/completions"
+  mkdir -p "$cache_dir"
+
+  local shims_dir="${MISE_DATA_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}}/mise/shims"
+  local installs_dir="${MISE_DATA_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}}/mise/installs"
+  local skip_cache="${fpath[(r)*dotfiles/func*]}/completions.ign.cache"
+
+  # Load skip cache: lines of "cmd:version"
+  typeset -A cached_skips
+  if [[ -f "$skip_cache" ]]; then
+    local line
+    while IFS= read -r line; do
+      cached_skips[${line%%:*}]="${line#*:}"
+    done < "$skip_cache"
+  fi
+
+  typeset -A new_skips
+
+  _gen_one() {
+    local cmd="$1" exe="$2" cache_dir="$3"
+    local cache_file="$cache_dir/_${cmd}"
+
+    echo -n "Generating $cmd... "
+    timeout 2s "$exe" completion zsh > "$cache_file" 2>/dev/null ||
+    timeout 2s "$exe" completions zsh > "$cache_file" 2>/dev/null ||
+    timeout 2s "$exe" completion -s zsh > "$cache_file" 2>/dev/null ||
+    timeout 2s "$exe" gen-completions --shell zsh > "$cache_file" 2>/dev/null ||
+    { rm -f "$cache_file" 2>/dev/null; echo "skip"; return 1; }
+    echo "ok"
+  }
+
+  # Resolve a mise tool spec to its primary shim command name
+  # Returns via: cmd and shim_path variables in caller scope
+  _resolve_shim() {
+    local tool="$1"
+    cmd="${tool##*:}"  # cargo:leetcode-cli -> leetcode-cli
+    shim_path="$shims_dir/$cmd"
+    [[ -x "$shim_path" ]] && return 0
+
+    # try mise which
+    local real_bin
+    real_bin=$(mise which "$cmd" 2>/dev/null)
+    if [[ -n "$real_bin" ]]; then
+      cmd="${real_bin:t}"
+      shim_path="$shims_dir/$cmd"
+      [[ -x "$shim_path" ]] && return 0
+    fi
+
+    # for prefixed tools (cargo:foo-bar -> cargo-foo-bar in installs dir)
+    if [[ "$tool" == *:* ]]; then
+      local install_name="${tool%%:*}-${tool#*:}"
+      local bin_file
+      for bin_file in "$installs_dir/${install_name}"/*/bin/*(N); do
+        cmd="${bin_file:t}"
+        shim_path="$shims_dir/$cmd"
+        [[ -x "$shim_path" ]] && return 0
+      done
+    fi
+
+    return 1
+  }
+
+  # Get installed tools from mise: "tool\tversion"
+  local -a tools
+  tools=("${(@f)$(mise ls --installed --json 2>/dev/null | jq -r 'to_entries[] | "\(.key)\t\(.value[0].version)"')}")
+
+  typeset -A seen
+  local tool ver cmd shim_path entry
+
+  # always include mise itself
+  if (( $+commands[mise] )); then
+    seen[mise]=1
+    ver=$(mise --version 2>/dev/null | head -1)
+    if [[ -n "${cached_skips[mise]}" && "${cached_skips[mise]}" == "$ver" ]]; then
+      echo "Skipping mise... (cached)"
+      new_skips[mise]="$ver"
+    else
+      _gen_one "mise" "mise" "$cache_dir" || new_skips[mise]="$ver"
+    fi
+  fi
+
+  for entry in "${tools[@]}"; do
+    tool="${entry%%$'\t'*}"
+    ver="${entry#*$'\t'}"
+
+    _resolve_shim "$tool" || continue
+
+    (( $+seen[$cmd] )) && continue
+    seen[$cmd]=1
+
+    if [[ -n "${cached_skips[$cmd]}" && "${cached_skips[$cmd]}" == "$ver" ]]; then
+      echo "Skipping $cmd... (cached)"
+      new_skips[$cmd]="$ver"
+      continue
+    fi
+
+    _gen_one "$cmd" "$shim_path" "$cache_dir" || new_skips[$cmd]="$ver"
+  done
+
+  unfunction _gen_one _resolve_shim
+
+  # Write updated skip cache
+  : > "$skip_cache"
+  for cmd in "${(@k)new_skips}"; do
+    echo "${cmd}:${new_skips[$cmd]}" >> "$skip_cache"
+  done
+
+  rm -f ~/.zcompdump*
+  echo "Done. Restart shell to apply."
+}

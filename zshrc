@@ -20,9 +20,8 @@ export DOCKER_HOST="unix:///var/run/docker.sock"
 export M2_REPO=$HOME/.m2/repository
 
 fpath=( ~/.dotfiles/func "${fpath[@]}" )
-autoload -Uz dclean diskclean diskusage cleanup update mvn fedora-update fedora-post-update claude-cost
+autoload -Uz dclean diskclean diskusage cleanup update mvn fedora-update fedora-post-update claude-cost regen-completions
 
-# History settings
 export HISTFILE=$HOME/.histfile
 export HISTSIZE=1000000000
 export SAVEHIST=${HISTSIZE}
@@ -54,36 +53,11 @@ if [[ -n "${terminfo[kdch1]}" ]]; then
   bindkey "${terminfo[kdch1]}" delete-char
 fi
 
-# Auto-generate completions - run manually with: regen-completions
-regen-completions() {
-  local cache_dir="${ZSH_CACHE_DIR}/completions"
-  mkdir -p "$cache_dir"
-
-  for spec in mise $(mise ls --installed --json 2>/dev/null | jq -r 'keys[]' 2>/dev/null | sort -u); do
-    local cmd="${spec##*:}"
-    echo "$cmd"
-    (( $+commands[$cmd] )) || continue
-    local cache_file="$cache_dir/_${cmd}"
-
-    echo -n "Generating $cmd... "
-    timeout 2s "$cmd" completion zsh > "$cache_file" 2>/dev/null ||
-    timeout 2s "$cmd" completions zsh > "$cache_file" 2>/dev/null ||
-    timeout 2s "$cmd" completion -s zsh > "$cache_file" 2>/dev/null ||
-    timeout 2s "$cmd" gen-completions --shell zsh > "$cache_file" 2>/dev/null ||
-    { rm -f "$cache_file" 2>/dev/null; echo "skip"; continue }
-    echo "ok"
-  done
-
-  rm -f ~/.zcompdump*
-  echo "Done. Restart shell to apply."
-}
-
 autoload -U +X bashcompinit && bashcompinit
 autoload -Uz compinit && compinit
 
 export PATH="${HOME}/.krew/bin:${PATH}" 
 
-# Snap bin
 export PATH="/var/lib/snapd/snap/bin:${PATH}"
 
 # Needs to be at the end of zshrc
@@ -113,7 +87,6 @@ zinit light-mode for \
 
 
 ### End of Zinit's installer chunk
-
 source ${HOME}/.zinitrc
 eval "$(atuin init zsh)"
 export PATH="$HOME/.local/bin:$PATH"
