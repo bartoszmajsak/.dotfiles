@@ -14,7 +14,7 @@ alias l="ls -lahF"
 alias i=istioctl
 alias kubectl=kubecolor
 alias k=kubectl
-crc-adm() { oc login -u kubeadmin -p "$(crc config get kubeadmin-password | tr -d ' ' | cut -d':' -f 2)"; }
+function crc-adm { oc login -u kubeadmin -p "$(crc config get kubeadmin-password | tr -d ' ' | cut -d':' -f 2)"; }
 
 # dev
 alias goland="GOROOT=$(go env GOROOT) GOPATH=$(go env GOPATH) goland . > /dev/null 2>&1 &"
