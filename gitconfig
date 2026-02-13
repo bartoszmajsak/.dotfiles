@@ -16,7 +16,7 @@
 	st = status
 	co = checkout
 	po = !git push --set-upstream origin $(git symbolic-ref --short HEAD)
-	lo = log --color --pretty=format:\"%C(auto)%h %d %Cblue%s %Creset (by %an)\"
+	lo = log --color --pretty=format:\"%C(auto)%h %d %Cblue%s %Creset (%an@%ad)\" --date=format:\"%Y-%m-%d\"
 	last = diff-tree --no-commit-id --name-only -r HEAD
 	anoe = commit -a --amend --no-edit
 	
