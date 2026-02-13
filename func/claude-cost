@@ -3,43 +3,12 @@ claude-cost() {
   [[ -d "$claude_dir" ]] || { echo "No Claude sessions found in ${claude_dir}"; return 1; }
 
   python3 << 'PYEOF'
-import json, os, glob
+import json, os, glob, re
 from collections import defaultdict
 
 claude_dir = os.path.expanduser("~/.claude/projects")
 session_files = glob.glob(os.path.join(claude_dir, "*/*.jsonl"))
 subagent_files = glob.glob(os.path.join(claude_dir, "*/*/*/*.jsonl"))
-all_files = session_files + subagent_files
-
-model_usage = defaultdict(lambda: {"input": 0, "output": 0, "cache_create": 0, "cache_read": 0, "requests": 0})
-
-for sf in all_files:
-    try:
-        with open(sf) as f:
-            for line in f:
-                try:
-                    obj = json.loads(line)
-                    msg = obj.get("message", obj) if isinstance(obj, dict) else None
-                    if msg and isinstance(msg, dict) and "usage" in msg:
-                        model = msg.get("model", "unknown")
-                        if "opus" in model:
-                            key = "opus"
-                        elif "sonnet" in model:
-                            key = "sonnet"
-                        elif "haiku" in model:
-                            key = "haiku"
-                        else:
-                            continue
-                        u = msg["usage"]
-                        model_usage[key]["input"] += u.get("input_tokens", 0)
-                        model_usage[key]["output"] += u.get("output_tokens", 0)
-                        model_usage[key]["cache_create"] += u.get("cache_creation_input_tokens", 0)
-                        model_usage[key]["cache_read"] += u.get("cache_read_input_tokens", 0)
-                        model_usage[key]["requests"] += 1
-                except (json.JSONDecodeError, KeyError):
-                    pass
-    except OSError:
-        pass
 
 # API pricing per million tokens
 pricing = {
@@ -49,6 +18,21 @@ pricing = {
 }
 default_pricing = pricing["sonnet"]
 
+def classify_model(model):
+    if "opus" in model: return "opus"
+    if "sonnet" in model: return "sonnet"
+    if "haiku" in model: return "haiku"
+    return None
+
+def calc_cost(u, key):
+    p = pricing.get(key, default_pricing)
+    return (
+        (u["input"] / 1e6) * p["input"] +
+        (u["output"] / 1e6) * p["output"] +
+        (u["cache_create"] / 1e6) * p["cache_create"] +
+        (u["cache_read"] / 1e6) * p["cache_read"]
+    )
+
 def fmt_tok(n):
     if n >= 1_000_000:
         return f"{n/1_000_000:.1f}M"
@@ -56,6 +40,85 @@ def fmt_tok(n):
         return f"{n/1_000:.1f}K"
     return str(n)
 
+def new_usage():
+    return {"input": 0, "output": 0, "cache_create": 0, "cache_read": 0, "requests": 0}
+
+def extract_user_text(obj):
+    content = obj.get("message", {}).get("content", "")
+    if isinstance(content, str):
+        return content.strip()
+    if isinstance(content, list):
+        for item in content:
+            if isinstance(item, dict) and item.get("type") == "text":
+                return item.get("text", "").strip()
+    return ""
+
+# Group files by parent session
+session_groups = defaultdict(lambda: {"files": [], "project": ""})
+for sf in session_files:
+    sid = os.path.basename(sf).replace(".jsonl", "")
+    session_groups[sid]["files"].append(sf)
+    parts = sf.split("/")
+    pi = parts.index("projects") + 1
+    session_groups[sid]["project"] = parts[pi]
+
+for sf in subagent_files:
+    parts = sf.split("/")
+    pi = parts.index("projects") + 1
+    parent_sid = parts[pi + 1]
+    session_groups[parent_sid]["files"].append(sf)
+    if not session_groups[parent_sid]["project"]:
+        session_groups[parent_sid]["project"] = parts[pi]
+
+# Single pass: aggregate global model usage + per-session data
+model_usage = defaultdict(new_usage)
+sessions = []
+
+for sid, grp in session_groups.items():
+    sess_usage = defaultdict(new_usage)
+    user_msgs = []
+
+    for sf in grp["files"]:
+        try:
+            with open(sf) as f:
+                for line in f:
+                    try:
+                        obj = json.loads(line)
+                        if not isinstance(obj, dict):
+                            continue
+                        # Collect user messages from main session file only
+                        if obj.get("type") == "user" and sf in session_files and len(user_msgs) < 5:
+                            text = extract_user_text(obj)
+                            if text and not text.startswith("<") and not text.startswith("[") and len(text) > 10:
+                                user_msgs.append(text)
+                        # Accumulate usage
+                        msg = obj.get("message", obj)
+                        if isinstance(msg, dict) and "usage" in msg:
+                            key = classify_model(msg.get("model", ""))
+                            if not key:
+                                continue
+                            u = msg["usage"]
+                            for target in (model_usage[key], sess_usage[key]):
+                                target["input"] += u.get("input_tokens", 0)
+                                target["output"] += u.get("output_tokens", 0)
+                                target["cache_create"] += u.get("cache_creation_input_tokens", 0)
+                                target["cache_read"] += u.get("cache_read_input_tokens", 0)
+                                target["requests"] += 1
+                    except (json.JSONDecodeError, KeyError):
+                        pass
+        except OSError:
+            pass
+
+    total_cost = sum(calc_cost(u, k) for k, u in sess_usage.items())
+    total_reqs = sum(u["requests"] for u in sess_usage.values())
+    if total_cost > 0:
+        models = ", ".join(f"{k}:{u['requests']}" for k, u in sorted(sess_usage.items()) if u["requests"])
+        project = grp["project"].replace("-home-bartek-", "~/").replace("-", "/", 20)
+        # Use first meaningful user message as summary
+        summary = re.sub(r"\s+", " ", user_msgs[0])[:120] + "..." if user_msgs else "(no user messages)"
+        sessions.append({"sid": sid, "cost": total_cost, "reqs": total_reqs, "models": models, "project": project, "summary": summary})
+
+# --- Global summary ---
 print(f"Sessions: {len(session_files)} main + {len(subagent_files)} subagent")
 print()
 print(f"{'Model':<8} {'Requests':>8}  {'Input':>8} {'Output':>8} {'Cache W':>8} {'Cache R':>8}  {'API Cost':>9}")
@@ -70,13 +133,7 @@ total_cr = 0
 
 for key in sorted(model_usage.keys()):
     u = model_usage[key]
-    p = pricing.get(key, default_pricing)
-    cost = (
-        (u["input"] / 1e6) * p["input"] +
-        (u["output"] / 1e6) * p["output"] +
-        (u["cache_create"] / 1e6) * p["cache_create"] +
-        (u["cache_read"] / 1e6) * p["cache_read"]
-    )
+    cost = calc_cost(u, key)
     grand_total += cost
     total_requests += u["requests"]
     total_input += u["input"]
@@ -87,6 +144,17 @@ for key in sorted(model_usage.keys()):
 
 print("-" * 75)
 print(f"{'TOTAL':<8} {total_requests:>8}  {fmt_tok(total_input):>8} {fmt_tok(total_output):>8} {fmt_tok(total_cw):>8} {fmt_tok(total_cr):>8}  ${grand_total:>8.2f}")
+
+# --- Top 10 most expensive sessions ---
+sessions.sort(key=lambda s: s["cost"], reverse=True)
+print()
+print(f"{'#':<4} {'Cost':>9} {'Reqs':>6}  {'Models':<24} {'Project'}")
+print("-" * 90)
+for i, s in enumerate(sessions[:10], 1):
+    print(f"{i:<4} ${s['cost']:>8.2f} {s['reqs']:>6}  {s['models']:<24} {s['project']}")
+    print(f"     {s['sid']}")
+    print(f"     {s['summary']}")
+
 print()
 print("Cost is estimated using Anthropic API list pricing.")
 print("Max/subscription plans include tokens in a flat monthly fee.")
