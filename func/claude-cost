@@ -1,0 +1,94 @@
+claude-cost() {
+  local claude_dir="${HOME}/.claude/projects"
+  [[ -d "$claude_dir" ]] || { echo "No Claude sessions found in ${claude_dir}"; return 1; }
+
+  python3 << 'PYEOF'
+import json, os, glob
+from collections import defaultdict
+
+claude_dir = os.path.expanduser("~/.claude/projects")
+session_files = glob.glob(os.path.join(claude_dir, "*/*.jsonl"))
+subagent_files = glob.glob(os.path.join(claude_dir, "*/*/*/*.jsonl"))
+all_files = session_files + subagent_files
+
+model_usage = defaultdict(lambda: {"input": 0, "output": 0, "cache_create": 0, "cache_read": 0, "requests": 0})
+
+for sf in all_files:
+    try:
+        with open(sf) as f:
+            for line in f:
+                try:
+                    obj = json.loads(line)
+                    msg = obj.get("message", obj) if isinstance(obj, dict) else None
+                    if msg and isinstance(msg, dict) and "usage" in msg:
+                        model = msg.get("model", "unknown")
+                        if "opus" in model:
+                            key = "opus"
+                        elif "sonnet" in model:
+                            key = "sonnet"
+                        elif "haiku" in model:
+                            key = "haiku"
+                        else:
+                            continue
+                        u = msg["usage"]
+                        model_usage[key]["input"] += u.get("input_tokens", 0)
+                        model_usage[key]["output"] += u.get("output_tokens", 0)
+                        model_usage[key]["cache_create"] += u.get("cache_creation_input_tokens", 0)
+                        model_usage[key]["cache_read"] += u.get("cache_read_input_tokens", 0)
+                        model_usage[key]["requests"] += 1
+                except (json.JSONDecodeError, KeyError):
+                    pass
+    except OSError:
+        pass
+
+# API pricing per million tokens
+pricing = {
+    "opus":   {"input": 15,   "output": 75, "cache_create": 18.75, "cache_read": 1.50},
+    "sonnet": {"input": 3,    "output": 15, "cache_create": 3.75,  "cache_read": 0.30},
+    "haiku":  {"input": 0.80, "output": 4,  "cache_create": 1.00,  "cache_read": 0.08},
+}
+default_pricing = pricing["sonnet"]
+
+def fmt_tok(n):
+    if n >= 1_000_000:
+        return f"{n/1_000_000:.1f}M"
+    if n >= 1_000:
+        return f"{n/1_000:.1f}K"
+    return str(n)
+
+print(f"Sessions: {len(session_files)} main + {len(subagent_files)} subagent")
+print()
+print(f"{'Model':<8} {'Requests':>8}  {'Input':>8} {'Output':>8} {'Cache W':>8} {'Cache R':>8}  {'API Cost':>9}")
+print("-" * 75)
+
+grand_total = 0
+total_requests = 0
+total_input = 0
+total_output = 0
+total_cw = 0
+total_cr = 0
+
+for key in sorted(model_usage.keys()):
+    u = model_usage[key]
+    p = pricing.get(key, default_pricing)
+    cost = (
+        (u["input"] / 1e6) * p["input"] +
+        (u["output"] / 1e6) * p["output"] +
+        (u["cache_create"] / 1e6) * p["cache_create"] +
+        (u["cache_read"] / 1e6) * p["cache_read"]
+    )
+    grand_total += cost
+    total_requests += u["requests"]
+    total_input += u["input"]
+    total_output += u["output"]
+    total_cw += u["cache_create"]
+    total_cr += u["cache_read"]
+    print(f"{key:<8} {u['requests']:>8}  {fmt_tok(u['input']):>8} {fmt_tok(u['output']):>8} {fmt_tok(u['cache_create']):>8} {fmt_tok(u['cache_read']):>8}  ${cost:>8.2f}")
+
+print("-" * 75)
+print(f"{'TOTAL':<8} {total_requests:>8}  {fmt_tok(total_input):>8} {fmt_tok(total_output):>8} {fmt_tok(total_cw):>8} {fmt_tok(total_cr):>8}  ${grand_total:>8.2f}")
+print()
+print("Cost is estimated using Anthropic API list pricing.")
+print("Max/subscription plans include tokens in a flat monthly fee.")
+PYEOF
+}

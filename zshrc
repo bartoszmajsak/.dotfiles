@@ -20,7 +20,7 @@ export DOCKER_HOST="unix:///var/run/docker.sock"
 export M2_REPO=$HOME/.m2/repository
 
 fpath=( ~/.dotfiles/func "${fpath[@]}" )
-autoload -Uz dclean diskclean diskusage cleanup update mvn fedora-update fedora-post-update
+autoload -Uz dclean diskclean diskusage cleanup update mvn fedora-update fedora-post-update claude-cost
 
 # History settings
 export HISTFILE=$HOME/.histfile
