@@ -14,18 +14,20 @@ diskclean() {
   echo "=== Disk cleaner (threshold: ${threshold_mb}MB, interactive: ${interactive}) ==="
   echo ""
 
-  # --- Tool-native cleaners ---
-  # Each entry: label|dir|clean command|hint
+  # Entries: label|dir|clean command|hint
+  # Use rm -rf where safe, tool-specific commands only where required
   local -a cleaners=(
     "Go build cache|$(go env GOCACHE 2>/dev/null)|go clean -cache|Rebuilt on next go build"
     "Go module cache|${HOME}/go/pkg/mod|go clean -modcache|Re-downloaded on next go mod download"
-    "Go imports cache|${HOME}/.cache/goimports|rm -rf ${HOME}/.cache/goimports|Rebuilt by gopls"
-    "gopls cache|${HOME}/.cache/gopls|rm -rf ${HOME}/.cache/gopls|Rebuilt by gopls on next open"
-    "npm cache|${HOME}/.npm|npm cache clean --force|Re-downloaded on next npm install"
-    "pip cache|${HOME}/.cache/pip|pip cache purge|Re-downloaded on next pip install"
-    "uv cache|${HOME}/.cache/uv|uv cache clean|Re-downloaded on next uv install"
+    "Go imports cache|${HOME}/.cache/goimports|rm -rf|Rebuilt by gopls"
+    "gopls cache|${HOME}/.cache/gopls|rm -rf|Rebuilt by gopls on next open"
+    "JetBrains cache|${HOME}/.cache/JetBrains|rm -rf|Re-indexed on next IDE launch"
+    "Chrome cache|${HOME}/.cache/google-chrome|rm -rf|Rebuilt transparently by Chrome"
+    "npm cache|${HOME}/.npm|rm -rf|Re-downloaded on next npm install"
+    "pip cache|${HOME}/.cache/pip|rm -rf|Re-downloaded on next pip install"
+    "uv cache|${HOME}/.cache/uv|rm -rf|Re-downloaded on next uv install"
+    "Trash|${HOME}/.local/share/Trash|rm -rf|Permanently deletes trashed files"
     "Flatpak unused|/var/lib/flatpak|sudo flatpak uninstall --unused -y|Removes unreferenced runtimes"
-    "Trash|${HOME}/.local/share/Trash|rm -rf ${HOME}/.local/share/Trash/*|Permanently deletes trashed files"
     "Coredumps|/var/lib/systemd/coredump|sudo coredumpctl clean|Removes old crash dumps"
   )
 
@@ -49,9 +51,15 @@ diskclean() {
         echo ""
       fi
       printf "  %-25s %4dMB -> cleaning... " "$label" "$size_mb"
-      if eval "$cmd" >/dev/null 2>&1; then
+      # rm -rf entries use the dir path; other commands run as-is
+      if [[ "$cmd" == "rm -rf" ]]; then
+        rm -rf "$dir"
+      else
+        eval "$cmd" >/dev/null 2>&1
+      fi
+      if [[ $? -eq 0 ]]; then
         new_kb=$(du -sk "$dir" 2>/dev/null | cut -f1)
-        freed_mb=$(( (size_kb - new_kb) / 1024 ))
+        freed_mb=$(( (size_kb - ${new_kb:-0}) / 1024 ))
         total_freed=$((total_freed + freed_mb))
         echo "freed ${freed_mb}MB"
       else
@@ -66,22 +74,20 @@ diskclean() {
 
   # --- Discover unknown large dirs in ~/.cache ---
   echo "--- Unclaimed dirs in ~/.cache above ${threshold_mb}MB ---"
-  local known_pattern="^(go-build|goimports|gopls|pip|uv)$"
-  local found_unknown=0 cache_dir size_hr name
-  du -sh ~/.cache/*/ 2>/dev/null | sort -rh | while IFS=$'\t' read -r size_hr cache_dir; do
-    size_kb=$(du -sk "$cache_dir" 2>/dev/null | cut -f1)
+  local known_pattern="^(go-build|goimports|gopls|pip|uv|JetBrains|google-chrome)$"
+  local found_unknown=0 cache_dir name
+  du -sk ~/.cache/*/ 2>/dev/null | sort -rn | while IFS=$'\t' read -r size_kb cache_dir; do
     (( size_kb / 1024 >= threshold_mb )) || continue
     name="${cache_dir%/}"
     name="${name##*/}"
     [[ "$name" =~ ${known_pattern} ]] && continue
-    printf "  %-25s %s\n" "$name" "$size_hr"
+    printf "  %-25s %4dMB\n" "$name" "$((size_kb / 1024))"
     found_unknown=1
     if $interactive; then
       read -q "REPLY?    Delete ${cache_dir}? [y/N] " || { echo "  skipped"; continue; }
       echo ""
-      local before_kb=$size_kb
       rm -rf "$cache_dir"
-      freed_mb=$((before_kb / 1024))
+      freed_mb=$((size_kb / 1024))
       total_freed=$((total_freed + freed_mb))
       echo "    freed ${freed_mb}MB"
     fi

@@ -1,5 +1,6 @@
 diskusage() {
   local threshold_mb="${1:-100}"
+  local tmpdir=$(mktemp -d)
 
   echo "=== Disk usage report (threshold: ${threshold_mb}MB) ==="
   echo ""
@@ -7,42 +8,52 @@ diskusage() {
   df -h / | tail -1 | awk '{printf "  Root: %s used of %s (%s)\n", $3, $2, $5}'
   echo ""
 
+  # Known locations: label and path
+  local -a labels=( "Go modules" "Go build cache" "mise installs" "npm cache" "Flatpak (system)" "Trash" "Maven repo" )
+  local -a paths=(  "${HOME}/go/pkg/mod" "${HOME}/.cache/go-build" "${HOME}/.local/share/mise" "${HOME}/.npm" "/var/lib/flatpak" "${HOME}/.local/share/Trash" "${HOME}/.m2" )
+
+  # Launch all du calls in parallel
+  local i
+  for i in {1..${#labels}}; do
+    [[ -d "${paths[$i]}" ]] || continue
+    ( du -sk "${paths[$i]}" 2>/dev/null | cut -f1 > "${tmpdir}/${i}" ) &
+  done
+
+  # Cache subdirs in one call
+  du -sk ~/.cache/*/ 2>/dev/null > "${tmpdir}/cache" &
+
+  # Coredumps and journal
+  ( coredumpctl list --no-pager 2>/dev/null | tail -n +2 | wc -l > "${tmpdir}/coredumps" ) &
+  ( journalctl --disk-usage 2>/dev/null > "${tmpdir}/journal" ) &
+
+  wait
+
+  # Display known locations
   echo "--- Known locations ---"
-  local -a spots=(
-    "Go modules|${HOME}/go/pkg/mod"
-    "Go build cache|$(go env GOCACHE 2>/dev/null)"
-    "mise installs|${HOME}/.local/share/mise"
-    "npm cache|${HOME}/.npm"
-    "Flatpak (system)|/var/lib/flatpak"
-    "Trash|${HOME}/.local/share/Trash"
-    "Maven repo|${HOME}/.m2"
-  )
-  local entry label dir size_kb size_mb
-  for entry in "${spots[@]}"; do
-    label="${entry%%|*}"
-    dir="${entry#*|}"
-    [[ -d "$dir" ]] || continue
-    size_kb=$(du -sk "$dir" 2>/dev/null | cut -f1)
-    size_mb=$((size_kb / 1024))
-    (( size_mb >= threshold_mb )) && printf "  %-20s %4dMB\n" "$label" "$size_mb"
+  for i in {1..${#labels}}; do
+    [[ -f "${tmpdir}/${i}" ]] || continue
+    local size_kb=$(<"${tmpdir}/${i}")
+    local size_mb=$((size_kb / 1024))
+    (( size_mb >= threshold_mb )) && printf "  %-20s %4dMB\n" "${labels[$i]}" "$size_mb"
   done
   echo ""
 
+  # Display cache dirs
   echo "--- Top dirs in ~/.cache ---"
-  local line size_hr cache_dir name
-  du -sh ~/.cache/*/ 2>/dev/null | sort -rh | while IFS=$'\t' read -r size_hr cache_dir; do
-    size_kb=$(du -sk "$cache_dir" 2>/dev/null | cut -f1)
+  sort -rn "${tmpdir}/cache" | while IFS=$'\t' read -r size_kb cache_dir; do
     (( size_kb / 1024 >= threshold_mb )) || continue
-    name="${cache_dir%/}"
+    local name="${cache_dir%/}"
     name="${name##*/}"
-    printf "  %-20s %s\n" "$name" "$size_hr"
+    printf "  %-20s %4dMB\n" "$name" "$((size_kb / 1024))"
   done
   echo ""
 
   echo "--- Coredumps ---"
-  coredumpctl list --no-pager 2>/dev/null | tail -n +2 | wc -l | awk '{printf "  %s dumps\n", $1}'
+  printf "  %s dumps\n" "$(<"${tmpdir}/coredumps")"
   echo ""
 
   echo "--- Journal ---"
-  journalctl --disk-usage 2>/dev/null | sed 's/^/  /'
+  sed 's/^/  /' "${tmpdir}/journal"
+
+  rm -rf "$tmpdir"
 }
