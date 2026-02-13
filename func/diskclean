@@ -1,0 +1,69 @@
+diskclean() {
+  local threshold_mb="${1:-500}"
+  local total_freed=0
+
+  echo "=== Disk cleaner (threshold: ${threshold_mb}MB) ==="
+  echo ""
+
+  # --- Tool-native cleaners ---
+  # Each entry: description, size check path, clean command
+  local -a cleaners=(
+    "Go build cache|$(go env GOCACHE 2>/dev/null)|go clean -cache"
+    "Go module cache|${HOME}/go/pkg/mod|go clean -modcache"
+    "Go imports cache|${HOME}/.cache/goimports|rm -rf ${HOME}/.cache/goimports"
+    "gopls cache|${HOME}/.cache/gopls|rm -rf ${HOME}/.cache/gopls"
+    "npm cache|${HOME}/.npm|npm cache clean --force"
+    "pip cache|${HOME}/.cache/pip|pip cache purge"
+    "uv cache|${HOME}/.cache/uv|uv cache clean"
+    "Flatpak unused|/var/lib/flatpak|sudo flatpak uninstall --unused -y"
+    "Trash|${HOME}/.local/share/Trash|rm -rf ${HOME}/.local/share/Trash/*"
+    "Coredumps|/var/lib/systemd/coredump|sudo coredumpctl clean"
+  )
+
+  for entry in "${cleaners[@]}"; do
+    local label="${entry%%|*}"
+    local rest="${entry#*|}"
+    local dir="${rest%%|*}"
+    local cmd="${rest#*|}"
+
+    [[ -d "$dir" ]] || continue
+    local size_kb=$(du -sk "$dir" 2>/dev/null | cut -f1)
+    local size_mb=$((size_kb / 1024))
+
+    if (( size_mb >= threshold_mb )); then
+      printf "  %-25s %4dMB -> cleaning... " "$label" "$size_mb"
+      if eval "$cmd" >/dev/null 2>&1; then
+        local new_kb=$(du -sk "$dir" 2>/dev/null | cut -f1)
+        local freed_mb=$(( (size_kb - new_kb) / 1024 ))
+        total_freed=$((total_freed + freed_mb))
+        echo "freed ${freed_mb}MB"
+      else
+        echo "failed"
+      fi
+    else
+      (( size_mb > 0 )) && printf "  %-25s %4dMB    (below threshold)\n" "$label" "$size_mb"
+    fi
+  done
+
+  echo ""
+
+  # --- Discover unknown large dirs in ~/.cache ---
+  echo "--- Unclaimed dirs in ~/.cache above ${threshold_mb}MB ---"
+  local known_pattern="go-build|goimports|gopls|pip|uv"
+  local found_unknown=0
+  while IFS=$'\t' read -r size dir; do
+    local name="${dir##*/}"
+    if [[ ! "$name" =~ ^(${known_pattern})$ ]]; then
+      printf "  %-25s %s\n" "$name" "$size"
+      found_unknown=1
+    fi
+  done < <(du -sh ~/.cache/*/ 2>/dev/null | sort -rh | awk -F'\t' -v t="${threshold_mb}" '{
+    cmd = "du -sk " $2 " 2>/dev/null"
+    cmd | getline line; close(cmd)
+    split(line, a); if (a[1]/1024 >= t) print $1 "\t" $2
+  }')
+  (( found_unknown )) || echo "  (none)"
+
+  echo ""
+  echo "=== Total freed: ${total_freed}MB ==="
+}
