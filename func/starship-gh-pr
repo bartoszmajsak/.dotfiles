@@ -1,0 +1,25 @@
+#!/bin/bash
+repo=$(git rev-parse --show-toplevel 2>/dev/null) || exit 1
+branch=$(git branch --show-current 2>/dev/null) || exit 1
+cache_key=$(echo -n "${repo}:${branch}" | md5sum | cut -d' ' -f1)
+cache_file="/tmp/starship_gh_pr_${cache_key}"
+cache_ttl=300
+
+# Background refresh if cache is stale or missing
+if [ ! -f "$cache_file" ] || [ $(($(date +%s) - $(stat -c %Y "$cache_file"))) -ge $cache_ttl ]; then
+  (gh pr view --json url,number,state -t '{{ .url }}|{{ .number }}|{{ .state }}' 2>/dev/null > "${cache_file}.tmp" && mv "${cache_file}.tmp" "$cache_file" || echo "" > "$cache_file") </dev/null >/dev/null 2>&1 &
+  disown 2>/dev/null
+fi
+
+# Read from cache
+[ -f "$cache_file" ] || exit 1
+data=$(cat "$cache_file")
+[ -z "$data" ] && exit 1
+
+url=${data%%|*}; rest=${data#*|}; num=${rest%%|*}; state=${rest##*|}
+case "$state" in
+  MERGED) color='35';;
+  OPEN) color='32';;
+  CLOSED) color='31';;
+esac
+printf ']8;;%s\[%sm%s[0m]8;;\' "$url" "$color" "$num"
