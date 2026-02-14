@@ -60,6 +60,7 @@
 	symlinks = true
 	commentchar = ";"
 	hooksPath = /home/bartek/.githooks
+	editor = vim -c 'setlocal textwidth=72 colorcolumn=73'
 
 [interactive]
 	diffFilter = delta --color-only --features=interactive
